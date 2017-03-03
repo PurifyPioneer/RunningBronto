@@ -4,6 +4,8 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.text.Position;
+
 import gameobjects.GameObject;
 
 /**
@@ -135,7 +137,7 @@ public class Camera {
 			go = i.next();
 
 			int xPosOnScreen = toScreenCoordinateX(go.getXPos()); // TODO better encapsulation of
-			int yPosOnScreen = toScreenCoordinateX(go.getYPos()); // transformation method
+			int yPosOnScreen = toScreenCoordinateY(go.getYPos()); // transformation method
 			
 			int widthOnScreen = (int) (go.getWidth() * pixelPerMeter);
 			int heightOnScreen = (int) (go.getHeight() * pixelPerMeter);
@@ -144,8 +146,9 @@ public class Camera {
 			yPosOnScreen += (this.height - heightOnScreen);
 
 			g.fillRect(xPosOnScreen, yPosOnScreen, widthOnScreen, heightOnScreen);
-			g.drawString("X: " + go.getXPos(), xPosOnScreen + widthOnScreen + 5, yPosOnScreen);
-			g.drawString("Y: " + go.getYPos(), xPosOnScreen + widthOnScreen + 5, yPosOnScreen + g.getFontMetrics().getHeight());
+			// draw information (position)
+//			g.drawString("X: " + go.getXPos(), xPosOnScreen + widthOnScreen + 5, yPosOnScreen);
+//			g.drawString("Y: " + go.getYPos(), xPosOnScreen + widthOnScreen + 5, yPosOnScreen + g.getFontMetrics().getHeight());
 
 		}
 	}
@@ -159,6 +162,15 @@ public class Camera {
 		return (int) ((x - this.getXPos()) * pixelPerMeter);
 	}
 
+	/**
+	 * Calculates where an object would be on the screen given its in game coordinate(s)
+	 * @param x
+	 * @return
+	 */
+	private int toScreenCoordinateY(double y) {
+		return (int) ((y - this.getYPos()) * pixelPerMeter);
+	}
+	
 	public double getXPos() {
 		return xPos;
 	}

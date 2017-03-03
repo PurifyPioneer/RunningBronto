@@ -14,32 +14,7 @@ public class Player extends GameObject {
 	 * dementsprechen zeichnen.
 	 */
 	
-	private double ySpeed;
-	
-	public Player(double xPos, double yPos, double width, double height) {
-		super(xPos, yPos, width, height);
-	}
-	
-	public void update(long deltaTime) {
-		// xpos
-		this.xPos += this.speed * deltaTime;
-		
-		this.ySpeed += -0.000025 * deltaTime;
-		
-		
-		this.yPos += this.ySpeed * deltaTime;
-		
-		if (this.yPos < 0) {
-			this.ySpeed = 0;
-			this.yPos = 0;
-		}
-	}
-	
-	public void setXSpeed(double speed) {
-		this.speed = speed;
-	}
-	
-	public void setYSpeed(double yspeed) {
-		this.ySpeed = yspeed;
+	public Player(double xPos, double yPos, double xSpeed, double ySpeed, double width, double height) {
+		super(xPos, yPos, xSpeed, ySpeed, width, height);
 	}
 }

@@ -19,6 +19,8 @@ import core.DisplayFrame;
 import core.Game;
 import gameobjects.Obstacle;
 import gameobjects.Player;
+import lighthouse.CoordinatesOutOfBoundsException;
+import lighthouse.LighthouseController;
 
 /**
  * Main class of project.
@@ -50,8 +52,9 @@ public class MapProject extends Game {
 			}
 
 		});
-
 	}
+	
+	public static final double GRAVITY = -9.81;
 	
 	Camera camera;
 	Map map;
@@ -67,37 +70,19 @@ public class MapProject extends Game {
 //		Music m = TinySound.loadMusic(new File("/Users/Christian/Desktop/Sonnenfinsternis.wav"));
 //		//m.play(true);
 		
-//		//Lighthouse testing
-//		LighthouseNetwork lhn = new lighthouse.LighthouseNetwork("localhost", 8000);
+//		LighthouseController lc = new LighthouseController();
 //		try {
-//			lhn.connect();
-//		} catch (IOException e) {
+//			lc.connect();
+//			lc.setLighthousePixel(27, 13, Color.RED);
+//		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
-//		byte[] data = new byte[1176];
-//		
-//		int x = 15;
-//		data[0+(x*14*3)] = (byte) 255;
-//		data[1+(x*14*3)] = (byte) 0;
-//		data[2+(x*14*3)] = (byte) 0;
-//		// TODO find out how to navigate array..
-		// seems to be working otherwise
-//		
-//		try {
-//			lhn.send(data);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		
-		// TODO a wrapper for the light house class would be useful, that allows
-		// setting pixels at specific coordinates to a chosen color.
 		
 		this.setTitle("Map Project");
 		this.setPreferredSize(new Dimension(width, height));
 		camera = new Camera(0, 0, width, height, pixelPerMeter);
 		map = new Map(width, pixelPerMeter);
 		map.spawnPlayer();
-		map.getGameObjectHandler().getGameObjects().add(new Obstacle(10, 0, 0.2, 0.5));
 		
 		this.startGame();	
 	}
@@ -178,15 +163,19 @@ public class MapProject extends Game {
 		Player p = map.getGameObjectHandler().getPlayer();
 		if (e.getKeyCode() == KeyEvent.VK_A) {
 			ActionLogger.LogAction("PLAYER MOVED LEFT");
-			p.setXSpeed(-0.001);
+			p.setXSpeed(-2);
 		}
 		if (e.getKeyCode() == KeyEvent.VK_D) {
 			ActionLogger.LogAction("PLAYER MOVED RIGHT");
-			p.setXSpeed(0.001);
+			p.setXSpeed(2);
 		}
 		if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 			ActionLogger.LogAction("PLAYER JUMPED");
-			p.setYSpeed(0.01);
+			p.setYSpeed(7.5);
+		}
+		if (e.getKeyCode() == KeyEvent.VK_R) {
+			ActionLogger.LogAction("PLAYER POSITION RESET");
+			p.setPosition(2, 0);
 		}
 
 // Camera movement disabled because jump'n run

@@ -2,6 +2,14 @@ package game;
 
 import gameobjects.GameObjectHandler;
 
+/**
+ * Mostly useless at the moment.. maybe used later
+ * for tile based systems..
+ * 
+ * @author PurifyPioneer
+ * @version 1.0
+ * @since 1.0
+ */
 public class Map {
 
 	private GameObjectHandler goHandler;

@@ -3,6 +3,8 @@ package gameobjects;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import game.MapProject;
+
 /**
  * Handles all objects that are currently somewhere in the game.
  * @author PurifyPioneer
@@ -48,6 +50,7 @@ public class GameObjectHandler {
 	 * @param deltaTime 
 	 */
 	public void update(long deltaTime) {
+		double dTime = (double) deltaTime/1000; // divide to get time in seconds (meter per seconds)
 		
 		// TODO main logic like collision detection may happen here
 		
@@ -57,11 +60,22 @@ public class GameObjectHandler {
 		while (i.hasNext()) {
 			go = i.next();
 			if (go instanceof Obstacle) {
-				((Obstacle) go).move(deltaTime);
+				go.setXPos(go.getXPos() + go.getXSpeed() * dTime);
 			}
 		}
 		
-		getPlayer().update(deltaTime);
+		// update player
+		getPlayer().setXPos(player.getXPos() + player.getXSpeed() * dTime);
+		
+		getPlayer().setYPos(player.getYPos() + player.getYSpeed() * dTime);
+		getPlayer().setYSpeed(player.getYSpeed() + (MapProject.GRAVITY * dTime));
+		
+		if (player.getYPos() < 0) {
+			player.setYSpeed(0);
+			player.setYPos(0);
+		}
+		// update player end
+		
 		
 		// spawn new obstacle
 		currentTime = System.currentTimeMillis();
@@ -81,13 +95,13 @@ public class GameObjectHandler {
 
 	public void spawnPlayer() {
 		if (player == null) {
-			player = new Player(2, 0, 0.5, 1.7);
+			player = new Player(2, 0, 0, 0, 0.5, 1.7);
 			gameObjects.add(player);
 		}		
 	}
 
 	public void spawnObstacle() {
-		gameObjects.add(new Obstacle(xPos, 0, 1, 1));
+		gameObjects.add(new Obstacle(xPos, 0, -2, 0, 1, 1));
 	}
 
 	/**
