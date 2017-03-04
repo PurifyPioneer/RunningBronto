@@ -43,6 +43,9 @@ public class GameObjectHandler {
 		this.spawnTime = (long) (spawnTime*1000);
 	}
 	
+	Iterator<GameObject> i;
+	GameObject go;
+	double dTime; 
 	/**
 	 * Updates the state of the GameObjectHandler
 	 * and all the objects controlled by it,
@@ -50,23 +53,22 @@ public class GameObjectHandler {
 	 * @param deltaTime 
 	 */
 	public void update(long deltaTime) {
-		double dTime = (double) deltaTime/1000; // divide to get time in seconds (meter per seconds)
+		dTime = (double) deltaTime/1000; // divide to get time in seconds (meter per seconds)
 		
 		// TODO main logic like collision detection may happen here
 		
 		// move all obstacles
-		Iterator<GameObject> i = gameObjects.iterator();
-		GameObject go;
-		while (i.hasNext()) {
-			go = i.next();
-			if (go instanceof Obstacle) {
-				go.setXPos(go.getXPos() + go.getXSpeed() * dTime);
-			}
-		}
+//		i = gameObjects.iterator();
+//		System.out.println(gameObjects.size());
+//		while (i.hasNext()) {
+//			go = i.next();
+//			if (go instanceof Obstacle) {
+//				go.setXPos(go.getXPos() + go.getXSpeed() * dTime);
+//			}
+//		}
 		
 		// update player
-		getPlayer().setXPos(player.getXPos() + player.getXSpeed() * dTime);
-		
+		getPlayer().setXPos(player.getXPos() + player.getXSpeed() * dTime);	
 		getPlayer().setYPos(player.getYPos() + player.getYSpeed() * dTime);
 		getPlayer().setYSpeed(player.getYSpeed() + (MapProject.GRAVITY * dTime));
 		
@@ -80,7 +82,7 @@ public class GameObjectHandler {
 		// spawn new obstacle
 		currentTime = System.currentTimeMillis();
 		if (currentTime - lastSpawn >= spawnTime) {
-			spawnObstacle();
+			//spawnObstacle();
 			lastSpawn = currentTime;
 		}
 	}

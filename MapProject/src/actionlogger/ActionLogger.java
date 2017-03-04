@@ -60,9 +60,8 @@ public class ActionLogger {
 	 * Actions from the log.
 	 */
 	public static void update() {
-		long currentTime = System.currentTimeMillis();
 		for (int i = 0; i < actions.size(); i++) {
-			if (currentTime - actions.get(i).getTimestamp() > lifetime) {
+			if (System.currentTimeMillis() - actions.get(i).getTimestamp() > lifetime) {
 				actions.remove(i);
 			}
 		}

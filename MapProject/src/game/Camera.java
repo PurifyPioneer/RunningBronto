@@ -89,6 +89,20 @@ public class Camera {
 		this.drawGrid = drawGrid;
 	}
 
+	double xPosInGame;
+	int xPosPixel;
+	int yPosInGame;
+	int yPosPixel;
+	double lineCount;
+	
+	GameObject go; // copy of list it needed so we dont cause threading issues
+	ArrayList<GameObject> imList;
+	Iterator<GameObject> i;
+	
+	int xPosOnScreen;
+	int yPosOnScreen;
+	int widthOnScreen;
+	int heightOnScreen;
 	/**
 	 * Renders all objects to the screen, that are within the current view.
 	 */
@@ -98,14 +112,13 @@ public class Camera {
 		if (drawGrid) {
 			
 			// position of line in game world
-			double xPosInGame = ((int) this.xPos);
+			xPosInGame = ((int) this.xPos);
 			
 			// how many lines need to be drawn
-			double lineCount = this.getWidth() / pixelPerMeter;
+			lineCount = this.getWidth() / pixelPerMeter;
 			
 			// where on the screen the line will be drawn
 			// x component only because why is fixed (vertical)
-			int xPosPixel;
 			do { // lines vertically
 				xPosPixel = toScreenCoordinateX(xPosInGame);
 				g.drawLine(xPosPixel, this.height, xPosPixel, 0);
@@ -115,9 +128,8 @@ public class Camera {
 
 
 			// same principle as above
-			double yPosInGame = ((int) this.yPos);
+			yPosInGame = ((int) this.yPos);
 			lineCount = this.getHeight() / pixelPerMeter;
-			int yPosPixel;
 			do { // lines vertically
 				yPosPixel = (int) (((yPosInGame) - this.getYPos()) * pixelPerMeter);
 				yPosPixel *= -1; // needed or lines will be drawn out of sight
@@ -128,19 +140,17 @@ public class Camera {
 			} while (yPosInGame -this.yPos <= lineCount);
 		}
 
-
-		GameObject go; // copy of list it needed so we dont cause threading issues
-		ArrayList<GameObject> imList = new ArrayList<>(gameObjects);
-		Iterator<GameObject> i = imList.iterator();
+		imList = new ArrayList<>(gameObjects);
+		i = imList.iterator();
 		while (i.hasNext()) {
 			
 			go = i.next();
 
-			int xPosOnScreen = toScreenCoordinateX(go.getXPos()); // TODO better encapsulation of
-			int yPosOnScreen = toScreenCoordinateY(go.getYPos()); // transformation method
+			xPosOnScreen = toScreenCoordinateX(go.getXPos());
+			yPosOnScreen = toScreenCoordinateY(go.getYPos());
 			
-			int widthOnScreen = (int) (go.getWidth() * pixelPerMeter);
-			int heightOnScreen = (int) (go.getHeight() * pixelPerMeter);
+			widthOnScreen = (int) (go.getWidth() * pixelPerMeter);
+			heightOnScreen = (int) (go.getHeight() * pixelPerMeter);
 
 			yPosOnScreen *= -1;
 			yPosOnScreen += (this.height - heightOnScreen);

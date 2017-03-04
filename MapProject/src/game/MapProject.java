@@ -54,7 +54,7 @@ public class MapProject extends Game {
 		});
 	}
 	
-	public static final double GRAVITY = -9.81;
+	public static final double GRAVITY = -25.81;
 	
 	Camera camera;
 	Map map;
@@ -83,12 +83,16 @@ public class MapProject extends Game {
 		camera = new Camera(0, 0, width, height, pixelPerMeter);
 		map = new Map(width, pixelPerMeter);
 		map.spawnPlayer();
-		
 		this.startGame();	
 	}
 	
+	int gameLoopFPS;
+	long lt;
+	long ct;
 	@Override
 	public void run() {
+		
+		this.setFont(this.getFont().deriveFont(Font.BOLD, 15));;
 		
 		// rendering takes place in its own thread so we can have as many
 		// frames as we want :3
@@ -114,12 +118,28 @@ public class MapProject extends Game {
 				map.update(deltaTime);
 			}
 			
+			if (System.currentTimeMillis() - lt >= 1000) {
+				System.out.println("GLFPS: " + gameLoopFPS);
+				lt = System.currentTimeMillis();
+				gameLoopFPS = 0;
+			} else {
+				gameLoopFPS++;
+			}
 			//Logic End
 			lastTime = currentTime;
+			
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}
 	
+	// local variable .. avoid memory allocation.. TODO needs testing
+	LinkedList<Action> actions;
+	Color bgColor = new Color(125, 245, 160); 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
@@ -130,13 +150,12 @@ public class MapProject extends Game {
 		camera.render(g, map.getGameObjectHandler().getGameObjects());
 		
 		// draw fps counter draw basic information
-		g.setFont(g.getFont().deriveFont(Font.BOLD, 15));
 		g.drawString("FPS: " + getFPS() + " width: " + this.getWidth() + " height: " + this.getHeight(), 10, 15);
 		
 		// draw paused info
 		if (paused) {
 			g.setColor(Color.RED);
-			g.drawString("Game is paused!", 300, 15);
+			//g.drawString("Game is paused!", 300, 15);
 			g.setColor(Color.BLACK);
 		}
 		
@@ -144,9 +163,9 @@ public class MapProject extends Game {
 		g.drawString("CamX: " + camera.getXPos() + " CamY: " + camera.getYPos(), 10, 15 + g.getFontMetrics().getHeight());
 		
 		// draw content of action logger
-		LinkedList<Action> actions = ActionLogger.getActions();
+		actions = ActionLogger.getActions();
 		if (actions.size() > 0) {
-			g.setColor(new Color(125, 245, 160));
+			g.setColor(bgColor);
 			g.fillRect(this.getWidth() - 205, 0, 205, actions.size() * g.getFontMetrics().getHeight() + 5);
 			g.setColor(Color.BLACK);
 			for (int i = 0; i < actions.size(); i++) {
@@ -155,7 +174,6 @@ public class MapProject extends Game {
 			}
 			ActionLogger.update();
 		}
-		
 	}
 
 	@Override
