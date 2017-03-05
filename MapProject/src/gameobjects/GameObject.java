@@ -1,5 +1,8 @@
 package gameobjects;
 
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
+
 import placeholder.Vector2D;
 
 /**
@@ -17,6 +20,8 @@ public class GameObject {
 	
 	private Vector2D speed;
 	
+	private Rectangle2D.Double boundingBox;
+	
 	public GameObject(double xPos, double yPos, double xSpeed, double ySpeed, double width, double height) {
 		
 		this.position = new Vector2D(xPos, yPos);
@@ -24,6 +29,8 @@ public class GameObject {
 		
 		this.width = width;
 		this.height = height;
+		
+		boundingBox = new Rectangle2D.Double(position.getXComponent(), position.getYComponent(), getWidth(), getHeight());
 	}
 	
 	public Vector2D getPosition() {
@@ -83,5 +90,15 @@ public class GameObject {
 	
 	public void setYSpeed(double ySpeed) {
 		this.speed.setYComponent(ySpeed);
+	}
+
+	
+	public Rectangle2D.Double getBoundingBox() {
+		return boundingBox;
+	}
+
+	
+	public void updateBoundingBox() {
+		this.boundingBox.setRect(getXPos(), getYPos(), getWidth(), getHeight());
 	}
 }

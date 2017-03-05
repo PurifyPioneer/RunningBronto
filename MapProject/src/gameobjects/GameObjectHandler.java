@@ -58,14 +58,14 @@ public class GameObjectHandler {
 		// TODO main logic like collision detection may happen here
 		
 		// move all obstacles
-//		i = gameObjects.iterator();
-//		System.out.println(gameObjects.size());
-//		while (i.hasNext()) {
-//			go = i.next();
-//			if (go instanceof Obstacle) {
-//				go.setXPos(go.getXPos() + go.getXSpeed() * dTime);
-//			}
-//		}
+		i = gameObjects.iterator();
+		while (i.hasNext()) {
+			go = i.next();
+			if (go instanceof Obstacle) {
+				go.setXPos(go.getXPos() + go.getXSpeed() * dTime);
+			}
+			go.updateBoundingBox();
+		}
 		
 		// update player
 		getPlayer().setXPos(player.getXPos() + player.getXSpeed() * dTime);	
@@ -78,11 +78,20 @@ public class GameObjectHandler {
 		}
 		// update player end
 		
+		// check collision
+		for (int i = 0; i < gameObjects.size(); i++) {
+			if (!(gameObjects.get(i) instanceof Player)) {
+				if (gameObjects.get(i).getBoundingBox().intersects(player.getBoundingBox())) {
+					System.out.println("Collision");
+					System.exit(0);
+				}
+			}
+		}
 		
 		// spawn new obstacle
 		currentTime = System.currentTimeMillis();
 		if (currentTime - lastSpawn >= spawnTime) {
-			//spawnObstacle();
+			spawnObstacle();
 			lastSpawn = currentTime;
 		}
 	}

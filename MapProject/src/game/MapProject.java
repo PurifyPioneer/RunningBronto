@@ -54,7 +54,7 @@ public class MapProject extends Game {
 		});
 	}
 	
-	public static final double GRAVITY = -25.81;
+	public static final double GRAVITY = -9.81;
 	
 	Camera camera;
 	Map map;
