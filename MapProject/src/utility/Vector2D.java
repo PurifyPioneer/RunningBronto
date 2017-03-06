@@ -1,4 +1,4 @@
-package placeholder;
+package utility;
 
 /**
  * Represents a Vector that can either be interpreted as a
