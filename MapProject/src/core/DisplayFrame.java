@@ -100,6 +100,8 @@ public class DisplayFrame {
 	public void addGame(Game game) {
 		frame.setTitle(game.getTitle());
 		frame.getContentPane().removeAll(); // Make sure that there are now components left
+		// TODO 
+		//frame.getContentPane().add(new MenuBar(), BorderLayout.PAGE_START);
 		frame.getContentPane().add(game, BorderLayout.CENTER);
 		frame.pack();
 		frame.setLocationRelativeTo(null);

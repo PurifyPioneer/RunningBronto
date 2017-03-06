@@ -3,7 +3,7 @@ package gameobjects;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
-import placeholder.Vector2D;
+import utility.Vector2D_Double;
 
 /**
  * Represents an object that can live in our game world.
@@ -13,19 +13,19 @@ import placeholder.Vector2D;
  */
 public class GameObject {
 
-	private Vector2D position;
+	private Vector2D_Double position;
 	
 	private double width;
 	private double height;
 	
-	private Vector2D speed;
+	private Vector2D_Double speed;
 	
 	private Rectangle2D.Double boundingBox;
 	
 	public GameObject(double xPos, double yPos, double xSpeed, double ySpeed, double width, double height) {
 		
-		this.position = new Vector2D(xPos, yPos);
-		this.speed = new Vector2D(xSpeed, ySpeed);
+		this.position = new Vector2D_Double(xPos, yPos);
+		this.speed = new Vector2D_Double(xSpeed, ySpeed);
 		
 		this.width = width;
 		this.height = height;
@@ -33,7 +33,7 @@ public class GameObject {
 		boundingBox = new Rectangle2D.Double(position.getXComponent(), position.getYComponent(), getWidth(), getHeight());
 	}
 	
-	public Vector2D getPosition() {
+	public Vector2D_Double getPosition() {
 		return this.position;
 	}
 	
@@ -67,7 +67,7 @@ public class GameObject {
 		return height;
 	}
 	
-	public Vector2D getSpeed() {
+	public Vector2D_Double getSpeed() {
 		return this.speed;
 	}
 	

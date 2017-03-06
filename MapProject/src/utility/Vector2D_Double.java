@@ -7,12 +7,12 @@ package utility;
  * @version 1.0
  * @since 1.0
  */
-public class Vector2D {
+public class Vector2D_Double {
 
 	private double xComponent;
 	private double yComponent;
 	
-	public Vector2D(double xComponent, double yComponent) {
+	public Vector2D_Double(double xComponent, double yComponent) {
 		this.xComponent = xComponent;
 		this.yComponent = yComponent;
 	}

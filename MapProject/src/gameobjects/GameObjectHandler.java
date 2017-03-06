@@ -43,9 +43,6 @@ public class GameObjectHandler {
 		this.spawnTime = (long) (spawnTime*1000);
 	}
 	
-	Iterator<GameObject> i;
-	GameObject go;
-	double dTime; 
 	/**
 	 * Updates the state of the GameObjectHandler
 	 * and all the objects controlled by it,
@@ -53,14 +50,16 @@ public class GameObjectHandler {
 	 * @param deltaTime 
 	 */
 	public void update(long deltaTime) {
-		dTime = (double) deltaTime/1000; // divide to get time in seconds (meter per seconds)
+		double dTime = (double) deltaTime/1000; // divide to get time in seconds (meter per seconds)
 		
 		// TODO main logic like collision detection may happen here
 		
 		// move all obstacles
-		i = gameObjects.iterator();
-		while (i.hasNext()) {
-			go = i.next();
+		Iterator<GameObject> it;
+		it = gameObjects.iterator();
+		GameObject go;
+		while (it.hasNext()) {
+			go = it.next();
 			if (go instanceof Obstacle) {
 				go.setXPos(go.getXPos() + go.getXSpeed() * dTime);
 			}
@@ -83,7 +82,7 @@ public class GameObjectHandler {
 			if (!(gameObjects.get(i) instanceof Player)) {
 				if (gameObjects.get(i).getBoundingBox().intersects(player.getBoundingBox())) {
 					System.out.println("Collision");
-					System.exit(0);
+					MapProject.setPaused(true);
 				}
 			}
 		}

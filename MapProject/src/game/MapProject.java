@@ -8,6 +8,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.io.File;
 import java.util.LinkedList;
 
 import javax.swing.SwingUtilities;
@@ -17,10 +18,11 @@ import actionlogger.Action;
 import actionlogger.ActionLogger;
 import core.DisplayFrame;
 import core.Game;
-import gameobjects.Obstacle;
+import display.Camera;
+import display.HighResView;
 import gameobjects.Player;
-import lighthouse.CoordinatesOutOfBoundsException;
-import lighthouse.LighthouseController;
+import kuusisto.tinysound.Music;
+import kuusisto.tinysound.TinySound;
 
 /**
  * Main class of project.
@@ -54,21 +56,29 @@ public class MapProject extends Game {
 		});
 	}
 	
+	// meta data
+	private String title = "Map Projhect";
+	private String version = "v0.1a";
+	
+	// deafult settings 
+	private int pixelPerMeter = 100;
+	private int width = 800;
+	private int height = 450;
+	
+	private HighResView camera;
+	private Camera lightHouseCamera;
+	
+	private Map map;
+	private static boolean paused = false;
+	
 	public static final double GRAVITY = -9.81;
 	
-	Camera camera;
-	Map map;
-	boolean paused = false;
-	int pixelPerMeter = 100;
-	int width = 800;
-	int height = 450;
 	
 	public MapProject() {
 		
-//		// Sound testing
-//		TinySound.init();
-//		Music m = TinySound.loadMusic(new File("/Users/Christian/Desktop/Sonnenfinsternis.wav"));
-//		//m.play(true);
+		// Sound testing 
+		TinySound.init();
+		Music m = TinySound.loadMusic(new File("/Users/Christian/Desktop/jump.wav"));
 		
 //		LighthouseController lc = new LighthouseController();
 //		try {
@@ -78,17 +88,22 @@ public class MapProject extends Game {
 //			e.printStackTrace();
 //		}
 		
-		this.setTitle("Map Project");
+		/*
+		 * Fancy Graphics if pixelfactor > than ?
+		 * 
+		 * 
+		 */
+		
+		this.setTitle(title + " " + version);
 		this.setPreferredSize(new Dimension(width, height));
-		camera = new Camera(0, 0, width, height, pixelPerMeter);
+		camera = new HighResView(0, 0, width, height, pixelPerMeter);
+		//lightHouseCamera = new Camera(0, 0, 14, 28, 2);
 		map = new Map(width, pixelPerMeter);
 		map.spawnPlayer();
 		this.startGame();	
 	}
 	
-	int gameLoopFPS;
-	long lt;
-	long ct;
+
 	@Override
 	public void run() {
 		
@@ -103,32 +118,37 @@ public class MapProject extends Game {
 					repaint();
 				}
 			}
-		}).start();
+		}, title + "-Renderer").start();
 		
-		// main game loop
+		// main game loop	
+		int gameLoopFPS = 0; // measuring how often the game logic is executed per second
+		long lastTimeGameLoop = 0;
+		
+		// measuring how long the time between game loop executions was
 		long currentTime = 0;
 		long lastTime = 0;
 		long deltaTime = 0;
 		while (true) {
 			currentTime = System.currentTimeMillis();
 			deltaTime = currentTime - lastTime;
-			//Logic Start
 			
+			//Logic Start
 			if (!paused) {
 				map.update(deltaTime);
 			}
+			//Logic End
 			
-			if (System.currentTimeMillis() - lt >= 1000) {
+			// counting executions per second
+			if (currentTime - lastTimeGameLoop >= 1000) {
 				System.out.println("GLFPS: " + gameLoopFPS);
-				lt = System.currentTimeMillis();
+				lastTimeGameLoop = currentTime;
 				gameLoopFPS = 0;
 			} else {
 				gameLoopFPS++;
 			}
-			//Logic End
 			lastTime = currentTime;
 			
-			try {
+			try { // it is sufficient when the game logic is executed <= 1000 time per second
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -232,7 +252,7 @@ public class MapProject extends Game {
 			} else {
 				ActionLogger.LogAction("Game paused!", Color.RED);
 			}
-			this.paused = !paused;
+		    	paused = !paused;
 		}
 		
 	}
@@ -303,5 +323,9 @@ public class MapProject extends Game {
 	public void componentShown(ComponentEvent arg0) {
 		
 	}
+	
+	public static void setPaused(boolean paused) {
+		MapProject.paused = paused;
+ 	}
 
 }
