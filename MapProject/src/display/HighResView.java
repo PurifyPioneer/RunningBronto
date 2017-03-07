@@ -83,7 +83,6 @@ public class HighResView extends Camera {
 			posOnScreen.setYComponent(posOnScreen.getYComponent() + (this.getHeight() - heightOnScreen));
 
 			g.fillRect(posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen);
-			// draw information (position)
 		}
 	}
 

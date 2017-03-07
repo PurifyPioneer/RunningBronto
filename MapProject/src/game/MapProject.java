@@ -33,6 +33,8 @@ import kuusisto.tinysound.TinySound;
  */
 public class MapProject extends Game {
 
+	//TODO look at lighthouse only.
+	
 	// entry point of program
 	public static void main(String[] args) {
 
