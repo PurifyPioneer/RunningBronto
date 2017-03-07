@@ -54,6 +54,14 @@ public class LighthouseNetwork {
 		stream.write(("a: b\r\n\r\n").getBytes());
 		stream.flush();
 	}
+	
+	public void disconnect() throws IOException {
+		sock.close();
+	}
+	
+	public boolean isConnected () {
+		return sock.isConnected();
+	}
 
 	/**
 	 * Sends a packet of data to the lighthouse server. Usually the data should

@@ -55,7 +55,6 @@ public abstract class Game extends JPanel implements Runnable, KeyListener, Mous
 		this.title = title;
 	}
 
-
 	public Thread getThread() {
 		return thread;
 	}
@@ -71,7 +70,7 @@ public abstract class Game extends JPanel implements Runnable, KeyListener, Mous
 	 * (How often the frame is repainted).
 	 * @param currentTime
 	 */
-	protected void updateFPS(long currentTime) {
+	public void updateFPS(long currentTime) {
 		
 		if (currentTime - lastTime>= 1000) {
 			fps = fpsCounter;
@@ -87,7 +86,7 @@ public abstract class Game extends JPanel implements Runnable, KeyListener, Mous
 	 * up to date values.
 	 * @return fps
 	 */
-	protected long getFPS() {
+	public long getFPS() {
 		return fps;
 	}
 	

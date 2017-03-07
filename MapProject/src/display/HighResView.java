@@ -1,10 +1,18 @@
 package display;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 
+import actionlogger.Action;
+import actionlogger.ActionLogger;
+import core.Game;
+import core.ResourceHandler;
+import game.MapProject;
 import gameobjects.GameObject;
+import gameobjects.Player;
 import utility.Vector2D_Double;
 import utility.Vector2D_Integer;
 
@@ -17,8 +25,7 @@ public class HighResView extends Camera {
 	// if the grid should be drawn
 	private boolean drawGrid = true;
 
-	@Override
-	public void render(Graphics g, ArrayList<GameObject> gameObjects) {
+	public void render(Game parent, Graphics g, ArrayList<GameObject> gameObjects) {
 		
 		double xPosInGame;
 		int xPosPixel;
@@ -82,7 +89,38 @@ public class HighResView extends Camera {
 			posOnScreen.setYComponent(posOnScreen.getYComponent() * -1);
 			posOnScreen.setYComponent(posOnScreen.getYComponent() + (this.getHeight() - heightOnScreen));
 
-			g.fillRect(posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen);
+			if (go instanceof Player) {
+				g.drawImage(ResourceHandler.getTransparentImage("bronto.png"), posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen, null);
+			} else {
+				g.drawImage(ResourceHandler.getTransparentImage("tree.png"), posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen, null);
+			}
+		}
+		
+		//TODO refactor
+		// draw fps counter draw basic information
+		g.drawString("FPS: " + parent.getFPS() + " width: " + this.getWidth() + " height: " + this.getHeight(), 10, 15);
+		
+		// draw paused info
+		if (MapProject.isPaused()) {
+			g.setColor(Color.RED);
+			g.drawString("Game is paused!", 300, 15);
+			g.setColor(Color.BLACK);
+		}
+		
+		// draw camera information
+		g.drawString("CamX: " + getXPos() + " CamY: " + getYPos(), 10, 15 + g.getFontMetrics().getHeight());
+		
+		// draw content of action logger
+		LinkedList<Action> actions; actions = ActionLogger.getActions();
+		if (actions.size() > 0) {
+			g.setColor(ActionLogger.getBackgroundColor());
+			g.fillRect(this.getWidth() - 205, 0, 205, actions.size() * g.getFontMetrics().getHeight() + 5);
+			g.setColor(Color.BLACK);
+			for (int i1 = 0; i1 < actions.size(); i1++) {
+				g.setColor(actions.get(i1).getColor());
+				g.drawString(actions.get(i1).getAction(), this.getWidth() - 200, i1 * g.getFontMetrics().getHeight() + g.getFontMetrics().getHeight());
+			}
+			ActionLogger.update();
 		}
 	}
 

@@ -18,6 +18,7 @@ public class ActionLogger {
 	// Members
 	private static LinkedList<Action> actions  = new LinkedList<Action>();
 	private static int lifetime = 2500;
+	private static Color bgColor = new Color(125, 245, 160); 
 	
 	/**
 	 * Logs an Action and assigns it a timestamp so it
@@ -44,6 +45,22 @@ public class ActionLogger {
 	 */
 	public static LinkedList<Action> getActions() {
 		return actions;
+	}
+	
+	/**
+	 * Set the color of the background.
+	 * @param color
+	 */
+	public static void setBackgroundColor(Color color) {
+		ActionLogger.bgColor = color;
+	}
+	
+	/**
+	 * Returns the current color of the background.
+	 * @return bgColor
+	 */
+	public static Color getBackgroundColor() {
+		return ActionLogger.bgColor;
 	}
 	
 	/**

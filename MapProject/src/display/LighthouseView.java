@@ -1,6 +1,5 @@
 package display;
 
-import java.awt.Graphics;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -16,22 +15,26 @@ public class LighthouseView extends Camera {
 	LighthouseController lhController;
 	
 	public LighthouseView() {
-		super(0, 0, 14, 28, 2);
+		super(0, 0, 27, 13, 2);
 		
 		lhController = new LighthouseController();
 		try {
 			lhController.connect();
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
-	@Override
-	public void render(Graphics g, ArrayList<GameObject> gameObjects) {
+
+	public void render(ArrayList<GameObject> gameObjects) {
+		
+		//limiter
+		try {
+			Thread.sleep(1000/60);
+		} catch (InterruptedException e) {
+			// do nothing
+		}
 		
 		GameObject go; // copy of list it needed so we dont cause threading issues
 		ArrayList<GameObject> imList;
@@ -46,17 +49,24 @@ public class LighthouseView extends Camera {
 		while (i.hasNext()) {
 			
 			go = i.next();
-
+			
 			posOnScreen = worldToScreen(new Vector2D_Double(go.getXPos(), go.getYPos()));
 			
 			widthOnScreen = (int) (go.getWidth() * this.getPixelPerMeter());
 			heightOnScreen = (int) (go.getHeight() * this.getPixelPerMeter());
 
 			posOnScreen.setYComponent(posOnScreen.getYComponent() * -1);
-			posOnScreen.setYComponent(posOnScreen.getYComponent() + (this.getHeight() - heightOnScreen));
-
-			//g.fillRect(posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen);
+			posOnScreen.setYComponent(posOnScreen.getYComponent() + (14 - heightOnScreen));
+			
+			lhController.fillRectangle(posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen);
 		}
 		
+		if (lhController.isConnected()) {
+			lhController.pushFullImage();
+		}
+	}
+	
+	public void disconnect() throws IOException {
+		lhController.disconnect();
 	}
 }

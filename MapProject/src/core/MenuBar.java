@@ -14,6 +14,7 @@ public class MenuBar extends JMenuBar{
 	private JMenu baseMenu;
 	private JMenuItem baseItem;
 	private JMenuItem item_addGame;
+	private JMenuItem item_addLighthouseView;
 
 	public MenuBar() {
 		
@@ -33,6 +34,15 @@ public class MenuBar extends JMenuBar{
 			}
 		});
 
+		
+		item_addLighthouseView = new JMenuItem("Add Lh-View");
+		item_addLighthouseView.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//MenuBar.this.getParent()
+			}
+		});
+		
 		baseMenu.add(baseItem);
 		baseMenu.add(item_addGame);
 		

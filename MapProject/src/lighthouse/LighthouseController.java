@@ -14,6 +14,9 @@ import java.net.UnknownHostException;
  */
 public class LighthouseController {
 
+	private int lighthouseWidth = 27;
+	private int lighthouseHeight = 13;
+	
 	private LighthouseNetwork lhNetwork;
 	private byte[] data;
 	
@@ -37,7 +40,31 @@ public class LighthouseController {
 	}
 	
 	public void connect() throws UnknownHostException, IOException {
-			lhNetwork.connect();
+		lhNetwork.connect();
+	}
+	
+	public void disconnect() throws IOException {
+		lhNetwork.disconnect();
+	}
+	
+	public boolean isConnected() {
+		return lhNetwork.isConnected();
+	}
+	
+	/**
+	 * When everything has been drawn we push
+	 * the data/image and then reset the data
+	 * for next loop.
+	 */
+	public void pushFullImage() {
+		try {
+			lhNetwork.send(data);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		for (int i = 0; i < data.length; i++) {
+			data[i] = 0;
+		}
 	}
 	
 	/**
@@ -51,31 +78,96 @@ public class LighthouseController {
 	public void setLighthousePixel(int x, int y, Color color) throws CoordinatesOutOfBoundsException {
 		
 		// we accept the number of windows as a constant so they are hard coded ;)
-		if (x < 0 || x > 27 || y < 0 || y > 13) {
+		if (x < 0 || x > lighthouseWidth || y < 0 || y > lighthouseHeight) {
 			throw new CoordinatesOutOfBoundsException();
-		}
-		
-		int xPosInArray = x * 3;  // 3 bytes per window
-		int yPosInArray = y * 84; // 84 byte per story
-		int acessArrayAt = xPosInArray + yPosInArray;
-		
-		data[acessArrayAt] = (byte) color.getRed();
-		data[acessArrayAt+1] = (byte) color.getGreen();
-		data[acessArrayAt+2] = (byte) color.getBlue();
-		
-		try {
-			lhNetwork.send(data);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} else {
+			int xPosInArray = x * 3;  // 3 bytes per window
+			int yPosInArray = y * 84; // 84 byte per story
+			int acessArrayAt = xPosInArray + yPosInArray;
+			
+			data[acessArrayAt] = (byte) color.getRed();
+			data[acessArrayAt+1] = (byte) color.getGreen();
+			data[acessArrayAt+2] = (byte) color.getBlue();
 		}
 	}
 	
+	/**
+	 * Constructs a filled rectangle at a chosen position on the
+	 * lighthouse.
+	 * @param x
+	 * @param y
+	 * @param width
+	 * @param height
+	 */
 	public void fillRectangle(int x, int y, int width, int height) {
-		for (int i = 0; i < width; i++) {
-			for (int j = 0; j < height; j++) {
-				// TODO
+		
+		boolean xOkay = false;
+		boolean yOkay = false;
+		
+		int xPosNew = 0;
+		int yPosNew = 0;
+		int remainingWidth = 0;
+		int remainingHeight = 0;
+		
+		// check x
+		if (!(x > lighthouseWidth)) {
+			// check left border
+			if ((x < 0) && (x + width > 0)) {
+				xPosNew = 0;
+				remainingWidth = width - x;
+				xOkay = true;
+			} else if(x >= 0) {
+				// x + width within border
+				if (x + width < lighthouseWidth) {
+					xPosNew = x;
+					remainingWidth = width;
+					xOkay = true;
+				} else {
+					xPosNew = x;
+					remainingWidth = lighthouseWidth - x;
+					xOkay = true;
+				}
 			}
 		}
+		
+		if (!(y > lighthouseHeight)) {
+			if ((y < 0) && (y + height > 0)) {
+				yPosNew = 0;
+				remainingHeight = height - y;
+				yOkay  = true;
+			} else if (y >= 0) {
+				if (y + height < lighthouseHeight) {
+					yPosNew = y;
+					remainingHeight = height;
+					yOkay = true;
+				} else {
+					yPosNew = y;
+					remainingHeight = lighthouseHeight - y;
+					yOkay = true;
+				}
+			}
+		}
+		
+		if (xOkay && yOkay) {
+			System.err.println("Paint");
+			for (int i = 0; i < remainingWidth; i++) {
+				for (int j = 0; j < remainingHeight; j++) {
+					try {
+						setLighthousePixel(xPosNew + i, yPosNew + j, Color.RED);
+					} catch (CoordinatesOutOfBoundsException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}
+	}
+	
+	public int getLighthouseWidth() {
+		return this.lighthouseWidth;
+	}
+	
+	public int getLighthouseHeight() {
+		return this.lighthouseHeight;
 	}
 	
 }

@@ -28,6 +28,8 @@ public class DisplayFrame {
 	// Not extending JFrame because encapsulation
 	private JFrame frame = null;
 
+	private Game game;
+	
 	/**
 	 * Constructs a new {@link DisplayFrame} with
 	 * default values for width, height and title.
@@ -98,6 +100,7 @@ public class DisplayFrame {
 	 * @param game
 	 */
 	public void addGame(Game game) {
+		this.game = game;
 		frame.setTitle(game.getTitle());
 		frame.getContentPane().removeAll(); // Make sure that there are now components left
 		// TODO 
@@ -105,5 +108,9 @@ public class DisplayFrame {
 		frame.getContentPane().add(game, BorderLayout.CENTER);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
+	}
+	
+	public Game getGame()  {
+		return this.game;
 	}
 }

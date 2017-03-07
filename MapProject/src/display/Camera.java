@@ -63,10 +63,6 @@ public abstract class Camera {
 	}
 	
 	/**
-	 * Renders all objects to the screen, that are within the current view.
-	 */
-	public abstract void render(Graphics g, ArrayList<GameObject> gameObjects);
-	/**
 	 * Calculates where an object would be on the screen given its in game coordinate(s)
 	 * @param x
 	 * @return
@@ -106,5 +102,7 @@ public abstract class Camera {
 	public int getPixelPerMeter() {
 		return pixelPerMeter;
 	}
+
+
 
 }
