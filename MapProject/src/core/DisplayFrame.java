@@ -104,7 +104,7 @@ public class DisplayFrame {
 		frame.setTitle(game.getTitle());
 		frame.getContentPane().removeAll(); // Make sure that there are now components left
 		// TODO 
-		//frame.getContentPane().add(new MenuBar(), BorderLayout.PAGE_START);
+		frame.getContentPane().add(new MenuBar(game), BorderLayout.PAGE_START);
 		frame.getContentPane().add(game, BorderLayout.CENTER);
 		frame.pack();
 		frame.setLocationRelativeTo(null);

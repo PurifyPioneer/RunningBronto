@@ -15,7 +15,7 @@ import java.net.UnknownHostException;
 public class LighthouseController {
 
 	private int lighthouseWidth = 27;
-	private int lighthouseHeight = 13;
+	private int lighthouseHeight = 14;
 	
 	private LighthouseNetwork lhNetwork;
 	private byte[] data;
@@ -99,7 +99,7 @@ public class LighthouseController {
 	 * @param width
 	 * @param height
 	 */
-	public void fillRectangle(int x, int y, int width, int height) {
+	public void fillRectangle(int x, int y, int width, int height, Color color) {
 		
 		boolean xOkay = false;
 		boolean yOkay = false;
@@ -149,11 +149,10 @@ public class LighthouseController {
 		}
 		
 		if (xOkay && yOkay) {
-			System.err.println("Paint");
 			for (int i = 0; i < remainingWidth; i++) {
 				for (int j = 0; j < remainingHeight; j++) {
 					try {
-						setLighthousePixel(xPosNew + i, yPosNew + j, Color.RED);
+						setLighthousePixel(xPosNew + i, yPosNew + j, color);
 					} catch (CoordinatesOutOfBoundsException e) {
 						e.printStackTrace();
 					}

@@ -1,11 +1,13 @@
 package display;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import gameobjects.GameObject;
+import gameobjects.Player;
 import lighthouse.LighthouseController;
 import utility.Vector2D_Double;
 import utility.Vector2D_Integer;
@@ -15,9 +17,9 @@ public class LighthouseView extends Camera {
 	LighthouseController lhController;
 	
 	public LighthouseView() {
-		super(0, 0, 27, 13, 2);
+		super(0, 0, 28, 14, 2);
 		
-		lhController = new LighthouseController();
+		lhController = new LighthouseController("localhost", 8000);
 		try {
 			lhController.connect();
 		} catch (UnknownHostException e) {
@@ -31,7 +33,7 @@ public class LighthouseView extends Camera {
 		
 		//limiter
 		try {
-			Thread.sleep(1000/60);
+			Thread.sleep(1000/30);
 		} catch (InterruptedException e) {
 			// do nothing
 		}
@@ -58,11 +60,18 @@ public class LighthouseView extends Camera {
 			posOnScreen.setYComponent(posOnScreen.getYComponent() * -1);
 			posOnScreen.setYComponent(posOnScreen.getYComponent() + (14 - heightOnScreen));
 			
-			lhController.fillRectangle(posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen);
+			if (go instanceof Player) {
+				lhController.fillRectangle(posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen, Color.GREEN);
+				
+			} else {
+				lhController.fillRectangle(posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen, Color.RED);
+				
+			}
 		}
 		
 		if (lhController.isConnected()) {
 			lhController.pushFullImage();
+			System.out.println("SENDING");
 		}
 	}
 	

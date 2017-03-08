@@ -15,8 +15,8 @@ public class GameObject {
 
 	private Vector2D_Double position;
 	
-	private double width;
-	private double height;
+	protected double width;
+	protected double height;
 	
 	private Vector2D_Double speed;
 	

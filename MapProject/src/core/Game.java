@@ -16,7 +16,7 @@ import javax.swing.JPanel;
  * @since 1.0
  */
 @SuppressWarnings("serial")
-public abstract class Game extends JPanel implements Runnable, KeyListener, MouseListener, MouseWheelListener, ComponentListener {
+public abstract class Game extends JPanel implements Runnable, MouseListener, MouseWheelListener, ComponentListener {
 
 	private Thread thread;
 	private String title;
@@ -32,7 +32,6 @@ public abstract class Game extends JPanel implements Runnable, KeyListener, Mous
 	protected Game() {
 		title = "";
 		this.setFocusable(true);
-		this.addKeyListener(this);
 		this.addMouseWheelListener(this);
 		this.addMouseListener(this);
 		this.addComponentListener(this);

@@ -13,6 +13,8 @@ import core.ResourceHandler;
 import game.MapProject;
 import gameobjects.GameObject;
 import gameobjects.Player;
+import gameobjects.Ptera;
+import gameobjects.Tree;
 import utility.Vector2D_Double;
 import utility.Vector2D_Integer;
 
@@ -40,6 +42,8 @@ public class HighResView extends Camera {
 		int widthOnScreen;
 		int heightOnScreen;
 		Vector2D_Integer posOnScreen;
+		
+		g.drawImage(ResourceHandler.getImage("background.png"), 0, 0, this.getWidth(), this.getHeight(), null);
 		
 		// render map grid
 		if (drawGrid) {
@@ -92,8 +96,15 @@ public class HighResView extends Camera {
 			if (go instanceof Player) {
 				g.drawImage(ResourceHandler.getTransparentImage("bronto.png"), posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen, null);
 			} else {
-				g.drawImage(ResourceHandler.getTransparentImage("tree.png"), posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen, null);
+				if (go instanceof Tree) {
+					g.drawImage(ResourceHandler.getTransparentImage("tree.png"), posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen, null);
+				} else if (go instanceof Ptera) {
+					g.drawImage(ResourceHandler.getTransparentImage("ptera.png"), posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen, null);
+				}
 			}
+			g.setColor(Color.RED);
+			g.drawRect(posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen);
+			g.setColor(Color.BLACK);
 		}
 		
 		//TODO refactor
@@ -132,4 +143,10 @@ public class HighResView extends Camera {
 		this.drawGrid = drawGrid;
 	}
 	
+	
+	@Override
+	public void resize(int width, int height) {
+		super.resize(width, height);
+		setPixelPerMeter(height/5);
+	}
 }

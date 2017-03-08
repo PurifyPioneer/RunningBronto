@@ -1,59 +1,77 @@
 package gameobjects;
 
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 import game.MapProject;
+import input.Input;
 
 /**
  * Handles all objects that are currently somewhere in the game.
+ * 
  * @author PurifyPioneer
  * @version 1.0
  * @since 1.0
  */
 public class GameObjectHandler {
 
+	private Input input;
+	private boolean currentJump;
+	
 	private Player player;
 	private ArrayList<GameObject> gameObjects;
 	private double xPos;
-	
+
 	// time between obstacle spawn
 	private long spawnTime; // TODO think about randomizing
 	private long lastSpawn;
 	private long currentTime;
-	
+
 	/**
 	 * Creates a new instances of GameObjectHandler.
-	 * @param width width of the camera
-	 * @param pixelPerMeter how many picel are available to display 1 meter
+	 * 
+	 * @param width
+	 *            width of the camera
+	 * @param pixelPerMeter
+	 *            how many picel are available to display 1 meter
 	 */
-	public GameObjectHandler(int width, int pixelPerMeter) {
-		this(width, pixelPerMeter, 2.5);
+	public GameObjectHandler(int width, int pixelPerMeter, Input input) {
+		this(width, pixelPerMeter, 2.5, input);
 	}
-	
+
 	/**
 	 * Creates a new instances of GameObjectHandler.
-	 * @param width width of the camera
-	 * @param pixelPerMeter how many picel are available to display 1 meter
-	 * @param spawnTime time between obstacle spawn
+	 * 
+	 * @param width
+	 *            width of the camera
+	 * @param pixelPerMeter
+	 *            how many picel are available to display 1 meter
+	 * @param spawnTime
+	 *            time between obstacle spawn
 	 */
-	public GameObjectHandler(int width, int pixelPerMeter, double spawnTime) {
+	public GameObjectHandler(int width, int pixelPerMeter, double spawnTime, Input input) {
 		gameObjects = new ArrayList<GameObject>();
-		this.xPos = width/pixelPerMeter + 1;
-		this.spawnTime = (long) (spawnTime*1000);
+		// this.xPos = width/pixelPerMeter + 1;
+		this.xPos = 16;
+		this.spawnTime = (long) (spawnTime * 1000);
+		this.input = input;
 	}
-	
+
 	/**
-	 * Updates the state of the GameObjectHandler
-	 * and all the objects controlled by it,
-	 * like the player.
-	 * @param deltaTime 
+	 * Updates the state of the GameObjectHandler and all the objects controlled
+	 * by it, like the player.
+	 * 
+	 * @param deltaTime
 	 */
 	public void update(long deltaTime) {
-		double dTime = (double) deltaTime/1000; // divide to get time in seconds (meter per seconds)
-		
+		double dTime = (double) deltaTime / 1000; // divide to get time in
+													// seconds (meter per
+													// seconds)
+
 		// TODO main logic like collision detection may happen here
-		
+
 		// move all obstacles
 		Iterator<GameObject> it;
 		it = gameObjects.iterator();
@@ -66,27 +84,48 @@ public class GameObjectHandler {
 			go.updateBoundingBox();
 		}
 		
-		// update player
-		getPlayer().setXPos(player.getXPos() + player.getXSpeed() * dTime);	
-		getPlayer().setYPos(player.getYPos() + player.getYSpeed() * dTime);
-		getPlayer().setYSpeed(player.getYSpeed() + (MapProject.GRAVITY * dTime));
-		
+		if (input.isJumping() && !currentJump) {
+			currentJump = true;
+			getPlayer().setYSpeed(7.5);
+		}
+		if (input.isDucking()) {
+			System.out.println("TRY DUCKING");
+			getPlayer().setHeight(1);
+		} else if (!input.isDucking() && getPlayer().getHeight() == 1) {
+			getPlayer().setHeight(1.7);
+		}
+
+		boolean collide = false;
+		double newXPos = player.getXPos() + player.getXSpeed() * dTime;
+		double newYPos = player.getYPos() + player.getYSpeed() * dTime;
+		Rectangle2D.Double newBounding = new Rectangle2D.Double(newXPos, newYPos, getPlayer().getWidth(),
+				getPlayer().getHeight());
+
+		// check collision
+//		for (int i = 0; i < gameObjects.size(); i++) {
+//			if (!(gameObjects.get(i) instanceof Player)) {
+//				if (gameObjects.get(i).getBoundingBox().intersects(newBounding)) {
+//					System.out.println("Collision");
+//					collide = true;
+//					MapProject.setPaused(true);
+//				}
+//			}
+//		}
+
+		if (!collide) {
+			// update player
+			getPlayer().setXPos(newXPos);
+			getPlayer().setYPos(newYPos);
+			getPlayer().setYSpeed(player.getYSpeed() + (MapProject.GRAVITY * dTime));
+		}
+
 		if (player.getYPos() < 0) {
+			currentJump = false;
 			player.setYSpeed(0);
 			player.setYPos(0);
 		}
 		// update player end
-		
-		// check collision
-		for (int i = 0; i < gameObjects.size(); i++) {
-			if (!(gameObjects.get(i) instanceof Player)) {
-				if (gameObjects.get(i).getBoundingBox().intersects(player.getBoundingBox())) {
-					System.out.println("Collision");
-					MapProject.setPaused(true);
-				}
-			}
-		}
-		
+
 		// spawn new obstacle
 		currentTime = System.currentTimeMillis();
 		if (currentTime - lastSpawn >= spawnTime) {
@@ -94,11 +133,11 @@ public class GameObjectHandler {
 			lastSpawn = currentTime;
 		}
 	}
-	
+
 	public Player getPlayer() {
 		return this.player;
 	}
-	
+
 	public ArrayList<GameObject> getGameObjects() {
 		return this.gameObjects;
 	}
@@ -107,22 +146,34 @@ public class GameObjectHandler {
 		if (player == null) {
 			player = new Player(2, 0, 0, 0, 0.5, 1.7);
 			gameObjects.add(player);
-		}		
+		}
 	}
 
 	public void spawnObstacle() {
-		gameObjects.add(new Obstacle(xPos, 0, -2, 0, 1, 1));
+		Random r = new Random();
+		int x = r.nextInt(2);
+		switch (x) {
+		case 0:
+			gameObjects.add(new Tree(xPos, 0, -2, 0, 1, 1));
+			break;
+		case 1:
+			gameObjects.add(new Ptera(xPos + 2, 1, -2, 0, 1, 1));
+			this.xPos += 2;
+			break;
+		default:
+			break;
+		}
 	}
 
 	/**
-	 * Needs to be called when the window and thus the camera are
-	 * resized.
-	 * Otherwise Obstacles would be spawned at the same position which is not what we
-	 * want.
+	 * Needs to be called when the window and thus the camera are resized.
+	 * Otherwise Obstacles would be spawned at the same position which is not
+	 * what we want.
+	 * 
 	 * @param width
 	 * @param pixelPerMeter
 	 */
 	public void resize(int width, int pixelPerMeter) {
-		xPos = width/pixelPerMeter +1;
+		xPos = width / pixelPerMeter + 1;
 	}
 }

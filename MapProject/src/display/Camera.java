@@ -99,6 +99,10 @@ public abstract class Camera {
 		return height;
 	}
 
+	public void setPixelPerMeter(int pixelPerMeter) {
+		this.pixelPerMeter = pixelPerMeter;
+	}
+	
 	public int getPixelPerMeter() {
 		return pixelPerMeter;
 	}

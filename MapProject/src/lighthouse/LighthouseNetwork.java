@@ -48,7 +48,9 @@ public class LighthouseNetwork {
 	 *             if the IP address of the host could not be determined.
 	 */
 	public void connect() throws UnknownHostException, IOException {
+		System.out.println("xxx");
 		sock = new Socket(hostname, port);
+		System.out.println("Socket created...");
 		OutputStream stream = sock.getOutputStream();
 		stream.write(("POST /LH\r\n").getBytes());
 		stream.write(("a: b\r\n\r\n").getBytes());

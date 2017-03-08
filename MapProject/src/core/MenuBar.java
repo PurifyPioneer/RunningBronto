@@ -2,6 +2,8 @@ package core;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -16,7 +18,7 @@ public class MenuBar extends JMenuBar{
 	private JMenuItem item_addGame;
 	private JMenuItem item_addLighthouseView;
 
-	public MenuBar() {
+	public MenuBar(Game g) {
 		
 		baseMenu = new JMenu("Test");
 		baseItem = new JMenuItem("Exit");
@@ -33,18 +35,26 @@ public class MenuBar extends JMenuBar{
 				new DisplayFrame().addGame(new MapProject());;
 			}
 		});
-
 		
 		item_addLighthouseView = new JMenuItem("Add Lh-View");
 		item_addLighthouseView.addActionListener(new ActionListener() {			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//MenuBar.this.getParent()
+				try {
+					((MapProject) g).createLighthouseView();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 		});
 		
 		baseMenu.add(baseItem);
 		baseMenu.add(item_addGame);
+		baseMenu.add(item_addLighthouseView);
 		
 		this.add(baseMenu);
 	}
