@@ -126,6 +126,13 @@ public class HighResView extends Camera {
 		}
 		
 		
+		// draw paused info
+				if (RunningBronto.isPaused()) {
+					g.setColor(Color.RED);
+					g.drawString("Game is paused! Press p to unpause.", 300, 15);
+					g.setColor(Color.BLACK);
+				}
+		
 		if (drawInfo) {
 		
 		// draw fps counter draw basic information
@@ -134,7 +141,7 @@ public class HighResView extends Camera {
 		// draw paused info
 		if (RunningBronto.isPaused()) {
 			g.setColor(Color.RED);
-			g.drawString("Game is paused!", 300, 15);
+			g.drawString("Game is paused! Press p to unpause.", 300, 15);
 			g.setColor(Color.BLACK);
 		}
 		

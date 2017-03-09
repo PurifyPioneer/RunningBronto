@@ -114,7 +114,7 @@ public class LighthouseController {
 			// check left border
 			if ((x < 0) && (x + width > 0)) {
 				xPosNew = 0;
-				remainingWidth = width - x;
+				remainingWidth = width - x -2;
 				xOkay = true;
 			} else if(x >= 0) {
 				// x + width within border
@@ -123,7 +123,7 @@ public class LighthouseController {
 					remainingWidth = width;
 					xOkay = true;
 				} else {
-					xPosNew = x;
+					xPosNew = x + 1;
 					remainingWidth = lighthouseWidth - x;
 					xOkay = true;
 				}

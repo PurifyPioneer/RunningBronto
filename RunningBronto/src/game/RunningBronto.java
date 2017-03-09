@@ -113,7 +113,7 @@ public class RunningBronto extends Game {
 	
 	// pauses the game. static because we want to be able to have the ability to pause the game everywhere
 	// and reduce overhead
-	private static boolean paused = false;
+	private static boolean paused = true;
 
 	
 	
@@ -247,7 +247,7 @@ public class RunningBronto extends Game {
 				
 				while (true) {
 					if (lighthouseViewActive) {
-						lighthouseView.render(goHandler.getGameObjects());
+						lighthouseView.render(goHandler);
 					} else {
 						// If the lighthouse view is not active we sleep and
 						// look again after a second because it could get
