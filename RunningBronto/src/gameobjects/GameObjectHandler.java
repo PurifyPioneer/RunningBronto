@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 
-import game.MapProject;
+import core.ResourceHandler;
 import input.Input;
+import utility.Physics;
 
 /**
  * Handles all objects that are currently somewhere in the game.
@@ -53,7 +54,7 @@ public class GameObjectHandler {
 	 */
 	public GameObjectHandler(int width, int pixelPerMeter, double spawnTime, Input input) {
 		gameObjects = new ArrayList<GameObject>();
-		// this.xPos = width/pixelPerMeter + 1;
+		// this.xPos = width/pixelPerMeter + 1; TODO
 		this.xPos = 16;
 		this.spawnTime = (long) (spawnTime * 1000);
 		this.input = input;
@@ -87,9 +88,9 @@ public class GameObjectHandler {
 		if (input.isJumping() && !currentJump) {
 			currentJump = true;
 			getPlayer().setYSpeed(7.5);
+			ResourceHandler.getSound("jump.wav").play(0.5);
 		}
 		if (input.isDucking()) {
-			System.out.println("TRY DUCKING");
 			getPlayer().setHeight(1);
 		} else if (!input.isDucking() && getPlayer().getHeight() == 1) {
 			getPlayer().setHeight(1.7);
@@ -116,7 +117,7 @@ public class GameObjectHandler {
 			// update player
 			getPlayer().setXPos(newXPos);
 			getPlayer().setYPos(newYPos);
-			getPlayer().setYSpeed(player.getYSpeed() + (MapProject.GRAVITY * dTime));
+			getPlayer().setYSpeed(player.getYSpeed() + (Physics.GRAVITY * dTime));
 		}
 
 		if (player.getYPos() < 0) {

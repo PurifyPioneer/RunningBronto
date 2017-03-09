@@ -64,9 +64,9 @@ public abstract class Game extends JPanel implements Runnable, MouseListener, Mo
 	}
 	
 	/**
-	 * TODO Find away to calculate fps in general purposes
 	 * Will calculate how much fps the game is running at.
 	 * (How often the frame is repainted).
+	 * TODO Find away to calculate fps in general purposes
 	 * @param currentTime
 	 */
 	public void updateFPS(long currentTime) {

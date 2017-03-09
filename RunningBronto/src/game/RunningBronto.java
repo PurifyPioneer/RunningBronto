@@ -22,6 +22,7 @@ import display.HighResView;
 import display.LighthouseView;
 import gameobjects.GameObjectHandler;
 import input.KeyInput;
+import kuusisto.tinysound.TinySound;
 
 /**
  * Main class of project.
@@ -30,14 +31,12 @@ import input.KeyInput;
  * @version 1.0
  * @since 1.0
  */
-public class MapProject extends Game {
-
-	// TODO look at lighthouse only.
+public class RunningBronto extends Game {
 
 	// entry point of program
 	public static void main(String[] args) {
 
-		// because reasons .. :D
+		// to not block edt
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
@@ -48,6 +47,7 @@ public class MapProject extends Game {
 					e.printStackTrace();
 				}
 
+				// frame that holds the game if highresview should be displayed
 				DisplayFrame gameFrame;
 				boolean started = false;
 				// evaluate startup paramters
@@ -56,71 +56,69 @@ public class MapProject extends Game {
 					for (int i = 0; i < args.length; i++) {
 						arg = args[i];
 						if (arg.equalsIgnoreCase("-d") || arg.equalsIgnoreCase("-double")) {
+							// start game with both views enabled
 							gameFrame = new DisplayFrame();
-							gameFrame.addGame(new MapProject(true, true));
+							gameFrame.addGame(new RunningBronto(true, true));
 							started = true;
 							break found;
 						} else if (arg.equalsIgnoreCase("-lh") || arg.equalsIgnoreCase("lighthouse")) {
 							// TODO non functional because console input would be needed
-							//new MapProject(false, true);
-							started = true;
+							// (start only lighthouse view)
+							// new MapProject(false, true);
+							// started = true;
 							break found;
 						}
 					}
 
 				}
 				if (!started) {
+					// if no start up params were specified or the ones given could not be evaluated
+					// to something useful the standard will be created (only high res)
 					gameFrame = new DisplayFrame();
-					gameFrame.addGame(new MapProject(true, false));
+					gameFrame.addGame(new RunningBronto());
 				}
 
 			}
 		});
 	}
 
-	// // Sound testing
-	// TinySound.init();
-	// Music m = TinySound.loadMusic(new
-	// File("/Users/Christian/Desktop/jump.wav"));
-	//
-	// /*
-	// * Fancy Graphics if pixelfactor > than ?
-	// *
-	//
-	// */
-
 	// meta data
-	private String title = "Map Project";
-	private String version = "v0.17a";
+	private String title = "Running Bronto";
+	private String version = "v0.37a";
 
-	// deafault settings
-	private int pixelPerMeter = 200;
+	// default settings
+	private int pixelPerMeter;
 	private int width = 800;
 	private int height = 450;
 
 	// views
 	private HighResView highresView;
-	private boolean hightresViewActive = false; // TODO move these boolean into
-												// camera
+	private boolean hightresViewActive = false;
 	
 	// Lighthouse related stuff
 	private String urlString = "http://localhost:8000/lh.html";											
 	private LighthouseView lighthouseView;
 	private boolean lighthouseViewActive = false;
+	
+	// process that holds a reference to the local lighthouse server
+	private Process lhProcess;
+	// thread that sends data to the lighthouse
 	private Thread lighthouseThread;
 
+	// controller for all game objects/logic
 	private GameObjectHandler goHandler;
+	
+	// pauses the game. static because we want to be able to have the ability to pause the game everywhere
+	// and reduce overhead
 	private static boolean paused = false;
 
-	public static final double GRAVITY = -9.81;
-
-	private Process lhProcess;
+	
 	
 	
 	/**
 	 * Constructs a new Game with only the high res view active.
 	 */
-	public MapProject() {
+	public RunningBronto() {
 		this(true, false);
 	}
 
@@ -130,35 +128,43 @@ public class MapProject extends Game {
 	 * @param highres
 	 * @param lighthouse
 	 */
-	public MapProject(boolean highresView, boolean lighthouseView) {
+	public RunningBronto(boolean highresView, boolean lighthouseView) {
+		
+		// initializing the game
 		this.setTitle(title + " " + version);
 		this.setPreferredSize(new Dimension(width, height));
-
+		this.setFont(this.getFont().deriveFont(Font.BOLD, 15));;
+		
+		TinySound.init();
+		KeyInput input = new KeyInput();
+		this.addKeyListener(input);
+		goHandler = new GameObjectHandler(width, pixelPerMeter, input);
+		goHandler.spawnPlayer();
+		
 		if (highresView) {
+			// construct a new high res view with the chosen width and height;
+			pixelPerMeter = height/5;
 			this.highresView = new HighResView(0, 0, width, height, pixelPerMeter);
 			this.hightresViewActive = true;
 		}
 		if (lighthouseView) {
+			// create a new lighthouse view
 			try {
 				createLighthouseView();
 			} catch (IOException | URISyntaxException e) {
+				System.err.println("Could not create lighthouse view!");
 				e.printStackTrace();
 			}
 		}
 
-		// some initialization for game objects
-		this.setFont(this.getFont().deriveFont(Font.BOLD, 15));;
-		
-		KeyInput inp = new KeyInput();
-		this.addKeyListener(inp);
-		goHandler = new GameObjectHandler(width, pixelPerMeter, inp);
-		goHandler.spawnPlayer();
-
+		// start the game (-thread)
 		this.startGame();
 	}
 	
 	// TODO keep in mind that remote location does not need process
 	public void createLighthouseView() throws IOException, URISyntaxException {
+		
+		// TODO make working for remote connection!
 		
 		// start lighthouse server
 		lhProcess = new ProcessBuilder(System.getProperty("user.dir") + "/res/lighthouse/lhServer-win.exe").start();
@@ -177,10 +183,10 @@ public class MapProject extends Game {
 			@Override
 			public void run() {
 				// TODO find a better (safer) solution.. interrupt causes problems
-				MapProject.this.lighthouseThread.stop();
+				RunningBronto.this.lighthouseThread.stop();
 			
 				try {
-					MapProject.this.lighthouseView.disconnect();
+					RunningBronto.this.lighthouseView.disconnect();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -208,15 +214,16 @@ public class MapProject extends Game {
 		lighthouseThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
+				
 				while (true) {
 					if (lighthouseViewActive) {
-						System.err.println("Paint");
 						lighthouseView.render(goHandler.getGameObjects());
 					} else {
-						// If the lighthouse view is not active we sleep and look again
-						// after a second because it could get enabled anytime
+						// If the lighthouse view is not active we sleep and
+						// look again after a second because it could get
+						// enabled anytime
 						try {
-							Thread.sleep(1000);
+							Thread.sleep(100);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -256,7 +263,7 @@ public class MapProject extends Game {
 			lastTime = currentTime;
 
 			try { // it is sufficient when the game logic is executed <= 1000
-					// time per second
+					// times per second
 				Thread.sleep(1);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -319,8 +326,18 @@ public class MapProject extends Game {
 	@Override
 	public void componentResized(ComponentEvent e) {
 		ActionLogger.LogAction("COMPONENT RESIZED", Color.RED);
+		pixelPerMeter = this.getHeight()/5;
+		
+		// TODO goHandler needs to know which view shows the most meters
+		// in xdrirection so objects dont get spawned in view
+		
 		goHandler.resize(this.getWidth(), pixelPerMeter);
-		highresView.resize(this.getWidth(), this.getHeight());
+		if (hightresViewActive) {
+			highresView.resize(this.getWidth(), this.getHeight());
+		}
+		if (lighthouseViewActive) {
+			lighthouseView.resize(this.getWidth(), this.getHeight());
+		}
 	}
 
 	@Override
@@ -328,12 +345,20 @@ public class MapProject extends Game {
 
 	}
 
+	/**
+	 * Allow to pause the game logic
+	 * @param paused
+	 */
 	public static void setPaused(boolean paused) {
-		MapProject.paused = paused;
+		RunningBronto.paused = paused;
 	}
 
+	/**
+	 * Return if the game is currently paused
+	 * @return
+	 */
 	public static boolean isPaused() {
-		return MapProject.paused;
+		return RunningBronto.paused;
 	}
 
 }

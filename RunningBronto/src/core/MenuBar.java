@@ -9,7 +9,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import game.MapProject;
+import game.RunningBronto;
 
 public class MenuBar extends JMenuBar{
 
@@ -32,7 +32,7 @@ public class MenuBar extends JMenuBar{
 		item_addGame.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new DisplayFrame().addGame(new MapProject());;
+				new DisplayFrame().addGame(new RunningBronto());;
 			}
 		});
 		
@@ -41,7 +41,7 @@ public class MenuBar extends JMenuBar{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					((MapProject) g).createLighthouseView();
+					((RunningBronto) g).createLighthouseView();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
