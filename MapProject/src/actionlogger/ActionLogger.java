@@ -19,6 +19,7 @@ public class ActionLogger {
 	private static LinkedList<Action> actions  = new LinkedList<Action>();
 	private static int lifetime = 2500;
 	private static Color bgColor = new Color(125, 245, 160); 
+	private static boolean loggingEnabled = false;
 	
 	/**
 	 * Logs an Action and assigns it a timestamp so it
@@ -27,7 +28,7 @@ public class ActionLogger {
 	 * @param action action to log
 	 */
 	public static void LogAction(String action) {
-		actions.add(new Action(action, System.currentTimeMillis()));
+		LogAction(action, Color.BLACK);
 	}
 	
 	/**
@@ -36,7 +37,9 @@ public class ActionLogger {
 	 * @param color
 	 */
 	public static void LogAction(String action, Color color) {
-		actions.add(new Action(action, color, System.currentTimeMillis()));
+		if (loggingEnabled) {
+			actions.add(new Action(action, color, System.currentTimeMillis()));
+		}
 	}
 	
 	/**
@@ -72,6 +75,22 @@ public class ActionLogger {
 		ActionLogger.lifetime = (int) (lifetime * 1000);
 	}
 	
+	/**
+	 * Returns if logging is enabled.
+	 * @return
+	 */
+	public static boolean isLoggingEnabled() {
+		return loggingEnabled;
+	}
+
+	/**
+	 * Set if logging should be enabled. It is disabled by default.
+	 * @param loggingEnabled
+	 */
+	public static void setLoggingEnabled(boolean loggingEnabled) {
+		ActionLogger.loggingEnabled = loggingEnabled;
+	}
+
 	/**
 	 * Updates the ActionLogger and removes all old
 	 * Actions from the log.
