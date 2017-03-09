@@ -24,8 +24,10 @@ public class GameObjectHandler {
 	
 	private Player player;
 	private ArrayList<GameObject> gameObjects;
-	private double xPos;
 
+	private int minSpawnX = 10;
+	private boolean isGameOver = false;
+	
 	// time between obstacle spawn
 	private long spawnTime; // TODO think about randomizing
 	private long lastSpawn;
@@ -39,8 +41,8 @@ public class GameObjectHandler {
 	 * @param pixelPerMeter
 	 *            how many picel are available to display 1 meter
 	 */
-	public GameObjectHandler(int width, int pixelPerMeter, Input input) {
-		this(width, pixelPerMeter, 2.5, input);
+	public GameObjectHandler(Input input) {
+		this(2.5, input);
 	}
 
 	/**
@@ -53,10 +55,8 @@ public class GameObjectHandler {
 	 * @param spawnTime
 	 *            time between obstacle spawn
 	 */
-	public GameObjectHandler(int width, int pixelPerMeter, double spawnTime, Input input) {
+	public GameObjectHandler(double spawnTime, Input input) {
 		gameObjects = new ArrayList<GameObject>();
-		// this.xPos = width/pixelPerMeter + 1; TODO
-		this.xPos = 16;
 		this.spawnTime = (long) (spawnTime * 1000);
 		this.input = input;
 	}
@@ -72,71 +72,74 @@ public class GameObjectHandler {
 													// seconds (meter per
 													// seconds)
 
-		// TODO main logic like collision detection may happen here
+		if (!isGameOver) {
+			// TODO main logic like collision detection may happen here
 
-		// move all obstacles
-		Iterator<GameObject> it;
-		it = gameObjects.iterator();
-		GameObject go;
-		while (it.hasNext()) {
-			go = it.next();
-			if (go instanceof Obstacle) {
-				go.setXPos(go.getXPos() + go.getXSpeed() * dTime);
+			// move all obstacles
+			Iterator<GameObject> it;
+			it = gameObjects.iterator();
+			GameObject go;
+			while (it.hasNext()) {
+				go = it.next();
+				if (go instanceof Obstacle) {
+					go.setXPos(go.getXPos() + go.getXSpeed() * dTime);
+				}
+				go.updateBoundingBox();
 			}
-			go.updateBoundingBox();
-		}
-		
-		// handle player input
-		if (input.isJumping() && !currentJump) {
-			currentJump = true;
-			getPlayer().setYSpeed(7.5);
-			ResourceHandler.getSound("jump.wav").play(0.5);
-		}
-		if (input.isDucking()) {
-			getPlayer().setHeight(1);
-		} else if (!input.isDucking() && getPlayer().getHeight() == 1) {
-			getPlayer().setHeight(1.7);
-		}
+			
+			// handle player input
+			if (input.isJumping() && !currentJump) {
+				currentJump = true;
+				getPlayer().setYSpeed(7.5);
+				ResourceHandler.getSound("jump.wav").play(0.5);
+			}
+			if (input.isDucking()) {
+				getPlayer().setHeight(1);
+			} else if (!input.isDucking() && getPlayer().getHeight() == 1) {
+				getPlayer().setHeight(1.7);
+			}
 
-		// look a head collision detection so it doesnt look like
-		// the player is stuck inside an obstacle
-		boolean collide = false;
-		double newXPos = player.getXPos() + player.getXSpeed() * dTime;
-		double newYPos = player.getYPos() + player.getYSpeed() * dTime;
-		Rectangle2D.Double newBounding = new Rectangle2D.Double(newXPos, newYPos, getPlayer().getWidth(),
-				getPlayer().getHeight());
+			// look a head collision detection so it doesnt look like
+			// the player is stuck inside an obstacle
+			boolean collide = false;
+			double newXPos = player.getXPos() + player.getXSpeed() * dTime;
+			double newYPos = player.getYPos() + player.getYSpeed() * dTime;
+			Rectangle2D.Double newBounding = new Rectangle2D.Double(newXPos, newYPos, getPlayer().getWidth(),
+					getPlayer().getHeight());
 
-		// check collision
-		for (int i = 0; i < gameObjects.size(); i++) {
-			if (!(gameObjects.get(i) instanceof Player)) {
-				if (gameObjects.get(i).getBoundingBox().intersects(newBounding)) {
-					System.out.println("Collision");
-					collide = true;
-					RunningBronto.setPaused(true);
+			// check collision
+			for (int i = 0; i < gameObjects.size(); i++) {
+				if (!(gameObjects.get(i) instanceof Player)) {
+					if (gameObjects.get(i).getBoundingBox().intersects(newBounding)) {
+						System.out.println("Collision");
+						collide = true;
+						isGameOver = true;
+					}
 				}
 			}
-		}
 
-		if (!collide) {
-			// update player
-			getPlayer().setXPos(newXPos);
-			getPlayer().setYPos(newYPos);
-			getPlayer().setYSpeed(player.getYSpeed() + (Physics.GRAVITY * dTime));
-		}
+			if (!collide) {
+				// update player
+				getPlayer().setXPos(newXPos);
+				getPlayer().setYPos(newYPos);
+				getPlayer().setYSpeed(player.getYSpeed() + (Physics.GRAVITY * dTime));
+			}
 
-		if (player.getYPos() < 0) {
-			currentJump = false;
-			player.setYSpeed(0);
-			player.setYPos(0);
-		}
-		// update player end
+			if (player.getYPos() < 0) {
+				currentJump = false;
+				player.setYSpeed(0);
+				player.setYPos(0);
+			}
+			// update player end
 
-		// spawn new obstacle
-		currentTime = System.currentTimeMillis();
-		if (currentTime - lastSpawn >= spawnTime) {
-			spawnObstacle();
-			lastSpawn = currentTime;
+			// spawn new obstacle
+			currentTime = System.currentTimeMillis();
+			if (currentTime - lastSpawn >= spawnTime) {
+				spawnObstacle();
+				lastSpawn = currentTime;
+			}
 		}
+		
 	}
 
 	public Player getPlayer() {
@@ -159,26 +162,21 @@ public class GameObjectHandler {
 		int x = r.nextInt(2);
 		switch (x) {
 		case 0:
-			gameObjects.add(new Tree(xPos, 0, -2, 0, 1, 1));
+			gameObjects.add(new Tree(minSpawnX, 0, -2, 0, 1, 1));
 			break;
 		case 1:
-			gameObjects.add(new Ptera(xPos + 2, 1, -2, 0, 1, 1));
-			this.xPos += 2;
+			gameObjects.add(new Ptera(minSpawnX, 1, -2, 0, 1, 1));
 			break;
 		default:
 			break;
 		}
 	}
-
-	/**
-	 * Needs to be called when the window and thus the camera are resized.
-	 * Otherwise Obstacles would be spawned at the same position which is not
-	 * what we want.
-	 * 
-	 * @param width
-	 * @param pixelPerMeter
-	 */
-	public void resize(int width, int pixelPerMeter) {
-		xPos = width / pixelPerMeter + 1;
+	
+	public boolean isGameOver() {
+		return this.isGameOver;
+	}
+	
+	public void setMinSpawnX(int x) {
+		this.minSpawnX = x;
 	}
 }

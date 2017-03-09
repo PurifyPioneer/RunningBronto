@@ -33,6 +33,7 @@ public abstract class Camera {
 	// scaling factor, a meter in game equals pixelPerMeter pixels
 	// on screen
 	private int pixelPerMeter;
+	private int visibleMeters;
 
 	/**
 	 * Creates a new camera with all the values it needs to know to function.
@@ -107,6 +108,12 @@ public abstract class Camera {
 		return pixelPerMeter;
 	}
 
-
+	public void setVisibleMeters(int x) {
+		this.visibleMeters = x;
+	}
+	
+	public int getVisibleMeters() {
+		return this.visibleMeters;
+	}
 
 }

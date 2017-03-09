@@ -9,11 +9,9 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.io.IOException;
-import java.io.ObjectStreamClass;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -143,7 +141,7 @@ public class RunningBronto extends Game {
 		TinySound.init();
 		KeyInput input = new KeyInput();
 		this.addKeyListener(input);
-		goHandler = new GameObjectHandler(width, pixelPerMeter, input);
+		goHandler = new GameObjectHandler(input);
 		goHandler.spawnPlayer();
 		
 		if (highresView) {
@@ -312,7 +310,7 @@ public class RunningBronto extends Game {
 
 		// rendering everything in the current view
 		if (hightresViewActive) {
-			highresView.render(this, g, goHandler.getGameObjects());
+			highresView.render(this, g, goHandler);
 		}
 	}
 
@@ -363,13 +361,20 @@ public class RunningBronto extends Game {
 		// TODO goHandler needs to know which view shows the most meters
 		// in xdrirection so objects dont get spawned in view
 		
-		goHandler.resize(this.getWidth(), pixelPerMeter);
+		int max = 0;
 		if (hightresViewActive) {
 			highresView.resize(this.getWidth(), this.getHeight());
+			if (highresView.getVisibleMeters() > max) {
+				max = highresView.getVisibleMeters();
+			}
 		}
 		if (lighthouseViewActive) {
 			lighthouseView.resize(this.getWidth(), this.getHeight());
+			if (lighthouseView.getVisibleMeters() > max) {
+				max = lighthouseView.getVisibleMeters();
+			}
 		}
+		goHandler.setMinSpawnX(max);
 	}
 
 	@Override

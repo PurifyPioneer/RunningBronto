@@ -19,6 +19,8 @@ public class LighthouseView extends Camera {
 	public LighthouseView(String host, int port) {
 		super(0, 0, 28, 14, 2);
 		
+		setVisibleMeters(((28/2) + 1));
+		
 		lhController = new LighthouseController(host, port);
 		try {
 			lhController.connect();

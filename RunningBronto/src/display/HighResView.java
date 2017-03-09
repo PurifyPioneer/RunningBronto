@@ -1,6 +1,7 @@
 package display;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import core.Game;
 import core.ResourceHandler;
 import game.RunningBronto;
 import gameobjects.GameObject;
+import gameobjects.GameObjectHandler;
 import gameobjects.Player;
 import gameobjects.Ptera;
 import gameobjects.Tree;
@@ -19,7 +21,7 @@ import utility.Vector2D_Double;
 import utility.Vector2D_Integer;
 
 public class HighResView extends Camera {
-
+	
 	public HighResView(double xPos, double yPos, int width, int height, int pixelPerMeter) {
 		super(xPos, yPos, width, height, pixelPerMeter);
 	}
@@ -29,7 +31,9 @@ public class HighResView extends Camera {
 	private boolean drawInfo = false;
 	private boolean drawBounding = false;
 
-	public void render(Game parent, Graphics g, ArrayList<GameObject> gameObjects) {
+	public void render(Game parent, Graphics g, GameObjectHandler goHandler) {
+		
+		ArrayList<GameObject> gameObjects = goHandler.getGameObjects();
 		
 		double xPosInGame;
 		int xPosPixel;
@@ -112,6 +116,16 @@ public class HighResView extends Camera {
 			}
 		}
 		
+		if (goHandler.isGameOver()) {
+			g.setColor(Color.RED);
+			Font f = g.getFont();
+			g.setFont(g.getFont().deriveFont(Font.BOLD, 100));
+			g.drawString("GAME OVER!", this.getWidth()/2-300, this. getHeight()/2-g.getFontMetrics().getHeight()/2);
+			g.setFont(f);
+			g.setColor(Color.BLACK);
+		}
+		
+		
 		if (drawInfo) {
 		
 		// draw fps counter draw basic information
@@ -174,5 +188,6 @@ public class HighResView extends Camera {
 	public void resize(int width, int height) {
 		super.resize(width, height);
 		setPixelPerMeter(height/5);
+		setVisibleMeters(((width/getPixelPerMeter()) + 1));
 	}
 }
