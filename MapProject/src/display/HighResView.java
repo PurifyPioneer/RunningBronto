@@ -10,7 +10,7 @@ import actionlogger.Action;
 import actionlogger.ActionLogger;
 import core.Game;
 import core.ResourceHandler;
-import game.MapProject;
+import game.RunningBronto;
 import gameobjects.GameObject;
 import gameobjects.Player;
 import gameobjects.Ptera;
@@ -112,7 +112,7 @@ public class HighResView extends Camera {
 		g.drawString("FPS: " + parent.getFPS() + " width: " + this.getWidth() + " height: " + this.getHeight(), 10, 15);
 		
 		// draw paused info
-		if (MapProject.isPaused()) {
+		if (RunningBronto.isPaused()) {
 			g.setColor(Color.RED);
 			g.drawString("Game is paused!", 300, 15);
 			g.setColor(Color.BLACK);
