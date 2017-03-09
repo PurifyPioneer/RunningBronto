@@ -25,7 +25,9 @@ public class HighResView extends Camera {
 	}
 
 	// if the grid should be drawn
-	private boolean drawGrid = true;
+	private boolean drawGrid = false;
+	private boolean drawInfo = false;
+	private boolean drawBounding = false;
 
 	public void render(Game parent, Graphics g, ArrayList<GameObject> gameObjects) {
 		
@@ -79,6 +81,7 @@ public class HighResView extends Camera {
 			} while (yPosInGame - this.getYPos() <= lineCount);
 		}
 
+		// game objects are drawn above grid but below info
 		imList = new ArrayList<>(gameObjects);
 		i = imList.iterator();
 		while (i.hasNext()) {
@@ -102,12 +105,15 @@ public class HighResView extends Camera {
 					g.drawImage(ResourceHandler.getTransparentImage("ptera.png"), posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen, null);
 				}
 			}
-			g.setColor(Color.RED);
-			g.drawRect(posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen);
-			g.setColor(Color.BLACK);
+			if (drawBounding) {
+				g.setColor(Color.RED);
+				g.drawRect(posOnScreen.getXComponent(), posOnScreen.getYComponent(), widthOnScreen, heightOnScreen);
+				g.setColor(Color.BLACK);
+			}
 		}
 		
-		//TODO refactor
+		if (drawInfo) {
+		
 		// draw fps counter draw basic information
 		g.drawString("FPS: " + parent.getFPS() + " width: " + this.getWidth() + " height: " + this.getHeight(), 10, 15);
 		
@@ -133,6 +139,7 @@ public class HighResView extends Camera {
 			}
 			ActionLogger.update();
 		}
+		}
 	}
 
 	/**
@@ -143,6 +150,25 @@ public class HighResView extends Camera {
 		this.drawGrid = drawGrid;
 	}
 	
+	public boolean isGridEnabled() {
+		return this.drawGrid;	
+	}
+	
+	public void drawInfo(boolean drawInfo) {
+		this.drawInfo = drawInfo;
+	}
+	
+	public boolean isInfoEnabled() {
+		return this.drawInfo;	
+	}
+	
+	public void drawBounding(boolean drawBounding) {
+		this.drawBounding = drawBounding;
+	}
+	
+	public boolean isBoundingEnabled() {
+		return this.drawBounding;	
+	}
 	
 	@Override
 	public void resize(int width, int height) {

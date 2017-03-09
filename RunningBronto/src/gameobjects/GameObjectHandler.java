@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Random;
 
 import core.ResourceHandler;
+import game.RunningBronto;
 import input.Input;
 import utility.Physics;
 
@@ -85,6 +86,7 @@ public class GameObjectHandler {
 			go.updateBoundingBox();
 		}
 		
+		// handle player input
 		if (input.isJumping() && !currentJump) {
 			currentJump = true;
 			getPlayer().setYSpeed(7.5);
@@ -96,6 +98,8 @@ public class GameObjectHandler {
 			getPlayer().setHeight(1.7);
 		}
 
+		// look a head collision detection so it doesnt look like
+		// the player is stuck inside an obstacle
 		boolean collide = false;
 		double newXPos = player.getXPos() + player.getXSpeed() * dTime;
 		double newYPos = player.getYPos() + player.getYSpeed() * dTime;
@@ -103,15 +107,15 @@ public class GameObjectHandler {
 				getPlayer().getHeight());
 
 		// check collision
-//		for (int i = 0; i < gameObjects.size(); i++) {
-//			if (!(gameObjects.get(i) instanceof Player)) {
-//				if (gameObjects.get(i).getBoundingBox().intersects(newBounding)) {
-//					System.out.println("Collision");
-//					collide = true;
-//					MapProject.setPaused(true);
-//				}
-//			}
-//		}
+		for (int i = 0; i < gameObjects.size(); i++) {
+			if (!(gameObjects.get(i) instanceof Player)) {
+				if (gameObjects.get(i).getBoundingBox().intersects(newBounding)) {
+					System.out.println("Collision");
+					collide = true;
+					RunningBronto.setPaused(true);
+				}
+			}
+		}
 
 		if (!collide) {
 			// update player

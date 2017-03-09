@@ -16,10 +16,10 @@ public class LighthouseView extends Camera {
 
 	LighthouseController lhController;
 	
-	public LighthouseView() {
+	public LighthouseView(String host, int port) {
 		super(0, 0, 28, 14, 2);
 		
-		lhController = new LighthouseController("localhost", 8000);
+		lhController = new LighthouseController(host, port);
 		try {
 			lhController.connect();
 		} catch (UnknownHostException e) {
@@ -71,7 +71,6 @@ public class LighthouseView extends Camera {
 		
 		if (lhController.isConnected()) {
 			lhController.pushFullImage();
-			System.out.println("SENDING");
 		}
 	}
 	

@@ -50,9 +50,7 @@ public class DisplayFrame {
 		//-------------------------
 		
 		// Change window closing behavior
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// TODO Implement when final
-		// frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		WindowListener winListener = new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent e) {
@@ -65,7 +63,7 @@ public class DisplayFrame {
 				}
 			}
 		};
-		//frame.addWindowListener(winListener);
+		frame.addWindowListener(winListener);
 		frame.setResizable(true);
 		//frame.setUndecorated(true);
 		frame.setLocationRelativeTo(null);
@@ -102,8 +100,7 @@ public class DisplayFrame {
 	public void addGame(Game game) {
 		this.game = game;
 		frame.setTitle(game.getTitle());
-		frame.getContentPane().removeAll(); // Make sure that there are now components left
-		// TODO 
+		frame.getContentPane().removeAll();
 		frame.getContentPane().add(new MenuBar(game), BorderLayout.PAGE_START);
 		frame.getContentPane().add(game, BorderLayout.CENTER);
 		frame.pack();
