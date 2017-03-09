@@ -9,9 +9,11 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.io.IOException;
+import java.io.ObjectStreamClass;
 import java.net.URISyntaxException;
 import java.net.URL;
 
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
@@ -33,6 +35,9 @@ import kuusisto.tinysound.TinySound;
  */
 public class RunningBronto extends Game {
 
+	// TODO add some console outpot
+	// at important places
+	
 	// entry point of program
 	public static void main(String[] args) {
 
@@ -150,7 +155,7 @@ public class RunningBronto extends Game {
 		if (lighthouseView) {
 			// create a new lighthouse view
 			try {
-				createLighthouseView();
+				createLighthouseViewDemo();
 			} catch (IOException | URISyntaxException e) {
 				System.err.println("Could not create lighthouse view!");
 				e.printStackTrace();
@@ -161,20 +166,44 @@ public class RunningBronto extends Game {
 		this.startGame();
 	}
 	
-	// TODO keep in mind that remote location does not need process
-	public void createLighthouseView() throws IOException, URISyntaxException {
-		
-		// TODO make working for remote connection!
+	
+	/**
+	 * Opens a demo view.
+	 * (Starts server and opens browsers window)
+	 * This does currently not work on linux or mac.
+	 * 
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
+	public void createLighthouseView(String host, int port){
+		// creating the lh view
+		this.lighthouseView = new LighthouseView(host, port);
+		this.lighthouseViewActive = true;
+	}
+	
+	/**
+	 * Opens a demo view.
+	 * (Starts server and opens browsers window)
+	 * This does currently not work on linux or mac.
+	 * 
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 */
+	public void createLighthouseViewDemo() throws IOException, URISyntaxException {
 		
 		// start lighthouse server
-		lhProcess = new ProcessBuilder(System.getProperty("user.dir") + "/res/lighthouse/lhServer-win.exe").start();
+		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+			lhProcess = new ProcessBuilder(System.getProperty("user.dir") + "/res/lighthouse/lhServer-win.exe").start();
+		} else {
+			throw new RuntimeException("OS not supported!");
+		}
 		
 		// generating url/uri so browser window can be opened
 		URL url = new URL(urlString);
 		Desktop.getDesktop().browse(url.toURI());
 
 		// creating the lh view
-		this.lighthouseView = new LighthouseView();
+		this.lighthouseView = new LighthouseView("localhost", 8000);
 		this.lighthouseViewActive = true;
 		
 		// adding routine to stop lh thread and close connection
@@ -182,7 +211,7 @@ public class RunningBronto extends Game {
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
 			public void run() {
-				// TODO find a better (safer) solution.. interrupt causes problems
+				// TODO find a better (safer) solution.. use this atm because interrupt causes problems
 				RunningBronto.this.lighthouseThread.stop();
 			
 				try {
@@ -193,7 +222,10 @@ public class RunningBronto extends Game {
 				lhProcess.destroy();
 			}
 		}));
-		
+		// TODO this does not seem to work
+		// task: bring window to front after browser window has been opened
+//		SwingUtilities.getWindowAncestor(this).toFront();
+//		this.requestFocus();
 	}
 
 	@Override
@@ -359,6 +391,25 @@ public class RunningBronto extends Game {
 	 */
 	public static boolean isPaused() {
 		return RunningBronto.paused;
+	}
+	
+	public void toggleGrid() {
+		if (hightresViewActive) {
+			highresView.drawGrid(!highresView.isGridEnabled());
+		}
+	}
+
+	public void toggleInfo() {
+		if (hightresViewActive) {
+			highresView.drawInfo(!highresView.isInfoEnabled());
+		}
+		
+	}
+
+	public void toggleBounding() {
+		if (hightresViewActive) {
+			highresView.drawBounding(!highresView.isBoundingEnabled());
+		}
 	}
 
 }
