@@ -33,13 +33,50 @@ import kuusisto.tinysound.TinySound;
  */
 public class RunningBronto extends Game {
 
-	// TODO add some console outpot
-	// at important places
-	
+	// Structure and thoughts
+	//
+	// 1. mvc-pattern:
+	// - model: every objects on the screen is a gameobject (with properties
+	// like
+	// x, y width, height)
+	//
+	// - view: the view is handled by a central views. One got high resolutions
+	// for the PC and one just pixels for the lighthouse. We didn't used
+	// separated views for every gameObject (Player, Ptera, Tree), because then
+	// we would need two views per gameObject (high and low (pixel) res) and
+	// that would be to overkill at all.
+	//
+	// - controller: the gameObjectHandler manages all objects on the map and
+	// reacts on user inputs, collisions and updates the player position (moves
+	// all obstacles)
+	//
+	// 2. description: Our Game is a scroll slider with a fixed Player that can
+	// jump and
+	// duck. Obstacles are a tree and a flying Ptera. The goal is it to evade
+	// all obstacles that are coming in.
+	//
+	// 3. performance: for better performance we separated the game in different
+	// threads. two are only for the view (lighthouse socket and pc gui
+	// painting)
+	// and one for the game logic itself.
+	//
+	// 4. view versions and scaling: the gui got different debugging modes: grid
+	// painting, collision box painting and info painting. two fit with the
+	// lighthouse the double positions of the gameObjects in the high res gui
+	// are split into same sized blocks. to add additional comfort the high res
+	// gui scales with resized windows, but is always showing the same content,
+	// so you can't hack the game (seeing what's coming earlier) by resizing the
+	// window.
+	//
+	// 5. features: for more fun we added some nice textures and a library to
+	// play sounds. some start parameters help you to directly start the right
+	// mode of the game. a menu helps you to debug the game. for example to show
+	// which way you died by enabling the collision boxes.
+
 	// entry point of program
 	public static void main(String[] args) {
 
-		// to not block edt
+		// to not block edit
 		SwingUtilities.invokeLater(new Runnable() {
 
 			@Override
@@ -65,7 +102,8 @@ public class RunningBronto extends Game {
 							started = true;
 							break found;
 						} else if (arg.equalsIgnoreCase("-lh") || arg.equalsIgnoreCase("lighthouse")) {
-							// TODO non functional because console input would be needed
+							// TODO non functional because console input would
+							// be needed
 							// (start only lighthouse view)
 							// new MapProject(false, true);
 							// started = true;
@@ -75,8 +113,10 @@ public class RunningBronto extends Game {
 
 				}
 				if (!started) {
-					// if no start up params were specified or the ones given could not be evaluated
-					// to something useful the standard will be created (only high res)
+					// if no start up params were specified or the ones given
+					// could not be evaluated
+					// to something useful the standard will be created (only
+					// high res)
 					gameFrame = new DisplayFrame();
 					gameFrame.addGame(new RunningBronto());
 				}
@@ -97,12 +137,12 @@ public class RunningBronto extends Game {
 	// views
 	private HighResView highresView;
 	private boolean hightresViewActive = false;
-	
+
 	// Lighthouse related stuff
-	private String urlString = "http://localhost:8000/lh.html";											
+	private String urlString = "http://localhost:8000/lh.html";
 	private LighthouseView lighthouseView;
 	private boolean lighthouseViewActive = false;
-	
+
 	// process that holds a reference to the local lighthouse server
 	private Process lhProcess;
 	// thread that sends data to the lighthouse
@@ -110,14 +150,12 @@ public class RunningBronto extends Game {
 
 	// controller for all game objects/logic
 	private GameObjectHandler goHandler;
-	
-	// pauses the game. static because we want to be able to have the ability to pause the game everywhere
+
+	// pauses the game. static because we want to be able to have the ability to
+	// pause the game everywhere
 	// and reduce overhead
 	private static boolean paused = true;
 
-	
-	
-	
 	/**
 	 * Constructs a new Game with only the high res view active.
 	 */
@@ -132,21 +170,22 @@ public class RunningBronto extends Game {
 	 * @param lighthouse
 	 */
 	public RunningBronto(boolean highresView, boolean lighthouseView) {
-		
+
 		// initializing the game
 		this.setTitle(title + " " + version);
 		this.setPreferredSize(new Dimension(width, height));
-		this.setFont(this.getFont().deriveFont(Font.BOLD, 15));;
-		
+		this.setFont(this.getFont().deriveFont(Font.BOLD, 15));
+		;
+
 		TinySound.init();
 		KeyInput input = new KeyInput();
 		this.addKeyListener(input);
 		goHandler = new GameObjectHandler(input);
 		goHandler.spawnPlayer();
-		
+
 		if (highresView) {
 			// construct a new high res view with the chosen width and height;
-			pixelPerMeter = height/5;
+			pixelPerMeter = height / 5;
 			this.highresView = new HighResView(0, 0, width, height, pixelPerMeter);
 			this.hightresViewActive = true;
 		}
@@ -163,39 +202,36 @@ public class RunningBronto extends Game {
 		// start the game (-thread)
 		this.startGame();
 	}
-	
-	
+
 	/**
-	 * Opens a demo view.
-	 * (Starts server and opens browsers window)
-	 * This does currently not work on linux or mac.
+	 * Opens a demo view. (Starts server and opens browsers window) This does
+	 * currently not work on linux or mac.
 	 * 
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
-	public void createLighthouseView(String host, int port){
+	public void createLighthouseView(String host, int port) {
 		// creating the lh view
 		this.lighthouseView = new LighthouseView(host, port);
 		this.lighthouseViewActive = true;
 	}
-	
+
 	/**
-	 * Opens a demo view.
-	 * (Starts server and opens browsers window)
-	 * This does currently not work on linux or mac.
+	 * Opens a demo view. (Starts server and opens browsers window) This does
+	 * currently not work on linux or mac.
 	 * 
 	 * @throws IOException
 	 * @throws URISyntaxException
 	 */
 	public void createLighthouseViewDemo() throws IOException, URISyntaxException {
-		
+
 		// start lighthouse server
 		if (System.getProperty("os.name").toLowerCase().contains("windows")) {
 			lhProcess = new ProcessBuilder(System.getProperty("user.dir") + "/res/lighthouse/lhServer-win.exe").start();
 		} else {
 			throw new RuntimeException("OS not supported!");
 		}
-		
+
 		// generating url/uri so browser window can be opened
 		URL url = new URL(urlString);
 		Desktop.getDesktop().browse(url.toURI());
@@ -203,15 +239,16 @@ public class RunningBronto extends Game {
 		// creating the lh view
 		this.lighthouseView = new LighthouseView("localhost", 8000);
 		this.lighthouseViewActive = true;
-		
+
 		// adding routine to stop lh thread and close connection
 		// so we can start our problem again without a problem
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			@Override
 			public void run() {
-				// TODO find a better (safer) solution.. use this atm because interrupt causes problems
+				// TODO find a better (safer) solution.. use this atm because
+				// interrupt causes problems
 				RunningBronto.this.lighthouseThread.stop();
-			
+
 				try {
 					RunningBronto.this.lighthouseView.disconnect();
 				} catch (IOException e) {
@@ -222,8 +259,8 @@ public class RunningBronto extends Game {
 		}));
 		// TODO this does not seem to work
 		// task: bring window to front after browser window has been opened
-//		SwingUtilities.getWindowAncestor(this).toFront();
-//		this.requestFocus();
+		// SwingUtilities.getWindowAncestor(this).toFront();
+		// this.requestFocus();
 	}
 
 	@Override
@@ -244,7 +281,7 @@ public class RunningBronto extends Game {
 		lighthouseThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				
+
 				while (true) {
 					if (lighthouseViewActive) {
 						lighthouseView.render(goHandler);
@@ -356,11 +393,11 @@ public class RunningBronto extends Game {
 	@Override
 	public void componentResized(ComponentEvent e) {
 		ActionLogger.LogAction("COMPONENT RESIZED", Color.RED);
-		pixelPerMeter = this.getHeight()/5;
-		
+		pixelPerMeter = this.getHeight() / 5;
+
 		// TODO goHandler needs to know which view shows the most meters
 		// in xdrirection so objects dont get spawned in view
-		
+
 		int max = 0;
 		if (hightresViewActive) {
 			highresView.resize(this.getWidth(), this.getHeight());
@@ -384,6 +421,7 @@ public class RunningBronto extends Game {
 
 	/**
 	 * Allow to pause the game logic
+	 * 
 	 * @param paused
 	 */
 	public static void setPaused(boolean paused) {
@@ -392,12 +430,13 @@ public class RunningBronto extends Game {
 
 	/**
 	 * Return if the game is currently paused
+	 * 
 	 * @return
 	 */
 	public static boolean isPaused() {
 		return RunningBronto.paused;
 	}
-	
+
 	public void toggleGrid() {
 		if (hightresViewActive) {
 			highresView.drawGrid(!highresView.isGridEnabled());
@@ -408,7 +447,7 @@ public class RunningBronto extends Game {
 		if (hightresViewActive) {
 			highresView.drawInfo(!highresView.isInfoEnabled());
 		}
-		
+
 	}
 
 	public void toggleBounding() {
