@@ -17,6 +17,14 @@ import lighthouse.LighthouseController;
 import utility.Vector2D_Double;
 import utility.Vector2D_Integer;
 
+/**
+ * View for lower res display, escpecially the lighthouse
+ * that can only display small amounts of data at once.
+ * 
+ * @author PurifyPioneer
+ * @version 1.0
+ * @since 1.0
+ */
 public class LighthouseView extends Camera {
 
 	LighthouseController lhController;
@@ -83,6 +91,8 @@ public class LighthouseView extends Camera {
 			}
 		}
 		
+		// Gameover screen
+		// random color for each window
 		if (lhController.isConnected()) {
 			if (!goHandler.isGameOver()) {
 				lhController.pushFullImage();

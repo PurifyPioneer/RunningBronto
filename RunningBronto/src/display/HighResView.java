@@ -20,6 +20,15 @@ import gameobjects.Tree;
 import utility.Vector2D_Double;
 import utility.Vector2D_Integer;
 
+/**
+ * Highresolution view for desktops and such that we can have
+ * images/sprites displayed and other info that is only suitable for
+ * a bigger display.
+ * 
+ * @author PurifyPioneer
+ * @version 1.0
+ * @since 1.0
+ */
 public class HighResView extends Camera {
 	
 	public HighResView(double xPos, double yPos, int width, int height, int pixelPerMeter) {

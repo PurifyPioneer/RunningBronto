@@ -107,6 +107,10 @@ public class DisplayFrame {
 		frame.setLocationRelativeTo(null);
 	}
 	
+	/**
+	 * Returns the game that is currently added to the frame
+	 * @return
+	 */
 	public Game getGame()  {
 		return this.game;
 	}

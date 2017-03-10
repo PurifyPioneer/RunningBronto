@@ -1,12 +1,5 @@
 package display;
 
-import java.awt.Graphics;
-import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.swing.text.Position;
-
-import gameobjects.GameObject;
 import utility.Vector2D_Double;
 import utility.Vector2D_Integer;
 
@@ -74,11 +67,23 @@ public abstract class Camera {
 		return new Vector2D_Integer(xComp, yComp);
 	}
 	
+	/**
+	 * like world to screen but only for x coordinate.
+	 * useful in some situations.
+	 * @param x
+	 * @return
+	 */
 	protected int xToScreen(Double x) {
 		int xComp = (int) ((x - this.getXPos()) * pixelPerMeter);
 		return xComp;
 	}
 	
+	/**
+	 * like world to screen but only for x coordinate.
+	 * useful in some situations.
+	 * @param y
+	 * @return
+	 */
 	protected int yToScreen(Double y) {
 		int yComp = (int) ((y - this.getYPos()) * pixelPerMeter);
 		return yComp;
@@ -108,10 +113,20 @@ public abstract class Camera {
 		return pixelPerMeter;
 	}
 
+	/**
+	 * See getVisibleMeters().
+	 * @param x
+	 */
 	public void setVisibleMeters(int x) {
 		this.visibleMeters = x;
 	}
 	
+	/**
+	 * Returns how many meters (ingame) the camera can see.
+	 * Useful if different views are active that show different areas of the world
+	 * so obstacles are alway spawned out of sight.
+	 * @return
+	 */
 	public int getVisibleMeters() {
 		return this.visibleMeters;
 	}

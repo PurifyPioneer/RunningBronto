@@ -1,6 +1,5 @@
 package gameobjects;
 
-import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 
 import utility.Vector2D_Double;

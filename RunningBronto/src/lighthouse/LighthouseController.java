@@ -94,6 +94,8 @@ public class LighthouseController {
 	/**
 	 * Constructs a filled rectangle at a chosen position on the
 	 * lighthouse.
+	 * Tries to emulate the functionality we can normally have when using
+	 * a graphics object.
 	 * @param x
 	 * @param y
 	 * @param width

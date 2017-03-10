@@ -30,6 +30,10 @@ public class MenuBar extends JMenuBar{
 	private JMenuItem item_addLighthouseView;
 	private JMenuItem item_addLighthouseViewDemo;
 
+	/**
+	 * COnstructs the menu bar
+	 * @param g game to interact with
+	 */
 	public MenuBar(Game g) {
 		
 		baseMenu = new JMenu("Start");
